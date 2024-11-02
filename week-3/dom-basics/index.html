@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <input type="text"></input>
+    <button onclick="addTodo()">Add todo</button>
+</body>
+<script>
+    let id = 1
+
+    // function to add a todo
+    function addTodo(){
+        // get input box element
+        const inputEl = document.querySelector('input');
+
+        // create a new child div and set an attribute id
+        const newChild = document.createElement('div')
+        newChild.setAttribute('id', id)
+        newChild.style.display = 'flex'
+        id += 1
+
+        // create a h3 tag and assign input box value to it
+        const childHTag = document.createElement('h3')
+        childHTag.innerText = inputEl.value
+
+        // create delete button and define onclick fn - do not forget to assign div id
+        const childDelButton = document.createElement('button')
+        childDelButton.textContent = 'Delete Todo'
+        childDelButton.onclick = () => {
+            const id = newChild.getAttribute('id')
+            delTodo(id);
+        }
+
+        // append h3 tag and delete button to new child div
+        newChild.appendChild(childHTag)
+        newChild.appendChild(childDelButton)
+
+        // append new child div to body/parent
+        document.querySelector('body').appendChild(newChild)
+
+        // clear input box
+        inputEl.value = ' '
+    }
+
+    // function to delete a todo
+    function delTodo(index){
+        const el = document.getElementById(index);
+        el.parentNode.removeChild(el);
+    }
+</script>
+</html>
