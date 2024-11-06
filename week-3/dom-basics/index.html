@@ -9,48 +9,66 @@
     <h1>Todo List</h1>
     <input type="text"></input>
     <button onclick="addTodo()">Add todo</button>
+    <div id="parentTodos"></div>
 </body>
 <script>
-    let id = 1
+    let todos = [] // like react state
+    let id = 0
 
-    // function to add a todo
     function addTodo(){
-        // get input box element
-        const inputEl = document.querySelector('input');
+        if (document.querySelector('input').value !== '') {
+            todos.push({
+            id: id,
+            title: document.querySelector('input').value
+            })
+            id += 1;
+            render();
+        } 
+    }
 
-        // create a new child div and set an attribute id
+    // function to delete a todo
+    function delTodo(index){
+        for(let i = 0; i < todos.length; i++){
+            if (todos[i]['id'] == index) todos.splice(i, 1);
+        }
+        render();
+    }
+
+    function render(){
+        // clear parent innerHTML while rendering, to solve the problem of appending list elements over and over
+        document.getElementById('parentTodos').innerHTML = "";
+
+        todos.forEach(todo => {
+            const todoEl = createTodoComponent(todo);
+            document.getElementById('parentTodos').append(todoEl);     
+        })
+    }
+
+    function createTodoComponent(todo){
+        // create a new child div 
         const newChild = document.createElement('div')
-        newChild.setAttribute('id', id)
-        newChild.style.display = 'flex'
-        id += 1
+        newChild.style.margin = "20px 0px 20px 0px"
 
-        // create a h3 tag and assign input box value to it
-        const childHTag = document.createElement('h3')
-        childHTag.innerText = inputEl.value
+        // create a span tag and assign input box value to it
+        const childSTag = document.createElement('span')
+        childSTag.innerText = todo.title;
+        childSTag.style.marginRight = "20px"
 
         // create delete button and define onclick fn - do not forget to assign div id
         const childDelButton = document.createElement('button')
         childDelButton.textContent = 'Delete Todo'
         childDelButton.onclick = () => {
-            const id = newChild.getAttribute('id')
-            delTodo(id);
+            delTodo(todo.id);
         }
 
         // append h3 tag and delete button to new child div
-        newChild.appendChild(childHTag)
+        newChild.appendChild(childSTag)
         newChild.appendChild(childDelButton)
 
-        // append new child div to body/parent
-        document.querySelector('body').appendChild(newChild)
-
         // clear input box
-        inputEl.value = ' '
-    }
+        document.querySelector('input').value = ' '
 
-    // function to delete a todo
-    function delTodo(index){
-        const el = document.getElementById(index);
-        el.parentNode.removeChild(el);
+        return newChild
     }
 </script>
 </html>
