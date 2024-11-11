@@ -52,17 +52,28 @@
 
             localStorage.setItem("token", response.data.token);
             document.getElementById("information").innerHTML = response.data.msg;
+            getMyUsername()
         }
 
         async function getMyUsername(){
-            const response = await axios.get("http://localhost:3000/me", {
-                headers: {
-                    'Authorization': localStorage.getItem("token")
-                }
-            })
+            const token = localStorage.getItem("token");
 
-            const data = response.data.username || response.data.msg;
-            document.getElementById("information").innerHTML = data;
+            if(!token) {
+                document.getElementById("signup").style.display = "block";
+                document.getElementById("signin").style.display = "block";
+                document.getElementById("information").innerHTML = "Please login to see your information"
+            } else {
+                const response = await axios.get("http://localhost:3000/me", {
+                    headers: {
+                        'Authorization': token
+                    }
+                })
+
+                const data = response.data.username || response.data.msg;
+                document.getElementById("signup").style.display = "none";
+                document.getElementById("signin").style.display = "none";
+                document.getElementById("information").innerHTML = data;
+            }
         }
 
         async function logout(){
@@ -74,7 +85,10 @@
 
             localStorage.removeItem("token");
             const data = response.data.msg;
-            document.getElementById("information").innerHTML = data;
+            alert(data)
+            document.getElementById("signup").style.display = "block";
+            document.getElementById("signin").style.display = "block";
+            document.getElementById("information").innerHTML = "Please login to see your information"
         }
 
         getMyUsername()
