@@ -1,22 +1,31 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 const app = express();
 
 const JWT_SECRET = "ADD_YOUR_SECRET";
 const users = [];
 
 app.use(express.json());
+app.use(cors());
 
 function authMiddleware(req, res, next) {
     const token = req.headers.authorization;
-    const username = jwt.verify(token, JWT_SECRET);
 
-    if(!username) {
+    if (!token) {
+        return res.json({
+            msg: "jwt must be provided"
+        })
+    }   
+
+    const decodedInformation = jwt.verify(token, JWT_SECRET);
+
+    if(!decodedInformation) {
         return res.json({
             msg: "token is invalid"
         })
     } else {
-        req.username = username;
+        req.username = decodedInformation.username;
         next();
     }
 }
@@ -30,10 +39,17 @@ app.post("/signup", (req, res) => {
         })
     }
 
-    users.push({ username: username, password: password});
-    res.json({
-        msg: "You're signed up"
-    })
+    const user = users.find(user => user.username === username);
+    if(user) {
+        return res.json({
+            msg: 'user already exists with this username'
+        })
+    } else {
+        users.push({ username: username, password: password});
+        res.json({
+            msg: "You're signed up"
+        })
+    }
 })
 
 app.post("/signin", (req, res) => {
@@ -46,7 +62,8 @@ app.post("/signin", (req, res) => {
         const token = jwt.sign(payload, JWT_SECRET);
 
         res.json({
-            token: token
+            token: token,
+            msg: "You're signed in"
         })
     } else {
         return res.json({
@@ -56,8 +73,23 @@ app.post("/signin", (req, res) => {
 })
 
 app.get("/me", authMiddleware, (req, res) => {
+
+    const user = users.find(user => user.username === req.username)
+
+    if (user) {
+        res.json({
+            username: user.username
+        })
+    }
+})
+
+app.delete("/logout", authMiddleware, (req, res) => {
+
+    const userIdx = users.findIndex(user => user.username === req.username);
+    users.splice(userIdx, 1);
+
     res.json({
-        username: req.username
+        msg: "user is deleted"
     })
 })
 
