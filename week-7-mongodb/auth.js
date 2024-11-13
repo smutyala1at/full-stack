@@ -13,6 +13,7 @@ function authMiddleware(req, res, next) {
     } 
 
     req.userId = decodedUser.id;
+    console.log(req.userId);
     next();
 }
 

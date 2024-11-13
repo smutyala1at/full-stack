@@ -1,30 +1,47 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 const {UserModel, TodoModel} = require("./db");
 const {jwt, JWT_SECRET, authMiddleware} = require("./auth")
+const {signupSchema} = require("./inputValidation")
 const app = express();
 
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-    
+    const {success, data, error} = signupSchema.safeParse(req.body);
+
     try {
-        const name = req.body.name;
-        const email = req.body.email;
-        const password = req.body.password;
+        if (success) {
+            const {name, email, password} = data;
+            const hashedPassword = await bcrypt.hash(password, 5);
 
-        const user = await UserModel.insert({
-            name: name,
-            email: email,
-            password: password
-        })
+            const user = await UserModel.create({
+                name: name,
+                email: email,
+                password: hashedPassword
+            })
 
-        res.json({
-            msg: `${user.name}, You're signed up`
-        })
+            res.json({
+                msg: `${name}, You're signed up`
+            })
 
+        } else {
+            const errors = []
+            if (error.issues.length > 1) {
+                error.issues.forEach(issue => errors.push(issue.message))
+                return res.json({
+                    errors
+                })
+            }
+            
+            return res.json({
+                msg: error.issues[0].message
+            })
+        }
+        
     } catch(err) {
         return res.json({
-            msg: err
+            msg: err.message
         })
     } 
 
@@ -32,39 +49,43 @@ app.post("/signup", async (req, res) => {
 
 
 app.post("/signin", async (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+
 
     try{
-        const email = req.body.email;
-        const password = req.body.password;
-
         const user = await UserModel.findOne({
             email: email,
-            password: password
         })
 
-        if(user) {
+        if(user) {    
+            const istrueCredentials = await bcrypt.compare(password, user.password);
+
+            if(!istrueCredentials) return res.status(403).json({
+                msg: "Incorrect credentials"
+            })
+
             const token = jwt.sign({id: user._id}, JWT_SECRET);
             res.json({
                 token: token
             })
         } else {
             return res.status(403).json({
-                msg: "Incorrect credentials"
+                msg: "user doesn't exists"
             })
         }
     } catch(err){
         return res.json({
-            msg: err
+            msg: err.message
         })
     }
 })
 
 app.post("/todo", authMiddleware, async (req, res) => {
+    const title = req.body.title;
+    const done = false;
 
     try{
-        const title = req.body.title;
-        const done = false;
-
         const todo = await TodoModel.create({
             userId: req.userId,
             title: title,
@@ -78,7 +99,7 @@ app.post("/todo", authMiddleware, async (req, res) => {
 
     } catch(err) {
         return res.status(500).json({
-            msg: err
+            msg: err.message
         })
     }
 })
