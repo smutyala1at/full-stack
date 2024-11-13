@@ -1,9 +1,7 @@
 const express = require("express");
 const {UserModel, TodoModel} = require("./db");
-const jwt = require(jwt);
+const {jwt, JWT_SECRET, authMiddleware} = require("./auth")
 const app = express();
-
-const JWT_SECRET = "secret";
 
 app.use(express.json());
 
@@ -11,17 +9,17 @@ app.post("/signup", async (req, res) => {
     
     try {
         const name = req.body.name;
-        const email = req.body.username;
+        const email = req.body.email;
         const password = req.body.password;
 
-        const user = await UserModel.create({
+        const user = await UserModel.insert({
             name: name,
             email: email,
             password: password
         })
 
         res.json({
-            msg: `${user.name}, you're signed up`
+            msg: `${user.name}, You're signed up`
         })
 
     } catch(err) {
@@ -33,7 +31,7 @@ app.post("/signup", async (req, res) => {
 })
 
 
-app.post("/signin", async (res, res) => {
+app.post("/signin", async (req, res) => {
 
     try{
         const email = req.body.email;
@@ -61,14 +59,47 @@ app.post("/signin", async (res, res) => {
     }
 })
 
-app.post("/todo", (res, res) => {
+app.post("/todo", authMiddleware, async (req, res) => {
 
+    try{
+        const title = req.body.title;
+        const done = false;
+
+        const todo = await TodoModel.create({
+            userId: req.userId,
+            title: title,
+            done: done
+        })
+
+
+        res.status(200).json({
+            msg: "todo created"
+        })
+
+    } catch(err) {
+        return res.status(500).json({
+            msg: err
+        })
+    }
 })
 
 
-app.get("/todos", (res, res) => {
+app.get("/todos", authMiddleware, async (req, res) => {
+    
+    try {
+        const todos = await TodoModel.find({
+            userId: req.userId
+        })
 
+        res.status(200).json({
+            todos: todos
+        })
+    } catch(err) {
+        res.status(500).json({
+            msg: err
+        })
+    }
 })
 
 
-
+app.listen(3000);
