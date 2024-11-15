@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const objectId = mongoose.Schema.ObjectId;
 
-mongoose.connect("mongodb+srv://admin:qpaly%40199@cluster0.6rzvv.mongodb.net/course-selling-db");
-
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -88,14 +86,14 @@ const purchaseSchema = new mongoose.Schema({
     }
 })
 
-const users = mongoose.model("user", userSchema);
-const admins = mongoose.model("admin", adminSchema);
-const courses = mongoose.model("course", courseSchema);
-const purchases = mongoose.model("purchase", purchaseSchema);
+const User = mongoose.model("user", userSchema);
+const Admin = mongoose.model("admin", adminSchema);
+const Course = mongoose.model("course", courseSchema);
+const Purchase = mongoose.model("purchase", purchaseSchema);
 
 module.exports = {
-    users,
-    admins,
-    courses,
-    purchases
+    User,
+    Admin,
+    Course,
+    Purchase
 }
