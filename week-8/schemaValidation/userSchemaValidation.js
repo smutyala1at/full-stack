@@ -1,6 +1,6 @@
 const zod = require("zod");
 
-const userSignupSchemaValidation = zod.object({
+const SignupSchemaValidation = zod.object({
     firstName: zod
                 .string()
                 .min(3, {message: "First name must contain at least 3 characters"}),
@@ -23,7 +23,7 @@ const userSignupSchemaValidation = zod.object({
 }).strict({message: "Unknown parameters have been passed"})
 
 
-const userSigninSchemaValidation = zod.object({
+const SigninSchemaValidation = zod.object({
     email: zod
             .string()
             .email({ message: "Invalid email address" })
@@ -40,6 +40,6 @@ const userSigninSchemaValidation = zod.object({
 }).strict({message: "Unknown parameters have been passed"})
 
 module.exports = {
-    userSignupSchemaValidation,
-    userSigninSchemaValidation
+    SignupSchemaValidation,
+    SigninSchemaValidation
 }

@@ -2,7 +2,7 @@ const {Router} = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
-const {userSignupSchemaValidation, userSigninSchemaValidation} = require("../schemaValidation/userSchemaValidation");
+const {SignupSchemaValidation, SigninSchemaValidation} = require("../schemaValidation/userSchemaValidation");
 const { User } = require("../db/db");
 
 const userRouter = Router();
@@ -10,7 +10,7 @@ const userRouter = Router();
 userRouter.post("/signup", async (req, res) => {
     const {firstName, lastName, email, password} = req.body;
 
-    const {success, error} = userSignupSchemaValidation.safeParse(req.body);
+    const {success, error} = SignupSchemaValidation.safeParse(req.body);
     
     // early return if validation fails
     if(!success){
@@ -48,7 +48,7 @@ userRouter.post("/signup", async (req, res) => {
 
 userRouter.post("/signin", async (req, res) => {
     const {email, password} = req.body;
-    const {success, error} = userSigninSchemaValidation.safeParse(req.body);
+    const {success, error} = SigninSchemaValidation.safeParse(req.body);
 
     // early return if the validation fails
     if(!success){
