@@ -5,7 +5,7 @@ const adminRouter = Router();
 const {Admin, Course} = require("../db/db")
 const {SignupSchemaValidation, SigninSchemaValidation} = require("../schemaValidation/userSchemaValidation");
 const {authMiddleware} = require("../middlewares/authMiddleware");
-const { newCourseValidation } = require("../schemaValidation/coursesSchemaValidation");
+const { newCourseValidation, updateCourseValidation } = require("../schemaValidation/coursesSchemaValidation");
 
 adminRouter.post("/signup", async (req, res) => {
     const {firstName, lastName, email, password} = req.body;
@@ -89,11 +89,15 @@ adminRouter.post("/signin", async (req, res) => {
     res.status(200).json({
         token: token
     })
-
-
 }) 
 
-adminRouter.post("/course", authMiddleware, async (req, res) => {
+adminRouter.get("/course/bulk", async (req, res) => {
+    
+}) 
+
+adminRouter.use(authMiddleware);
+
+adminRouter.post("/course", async (req, res) => {
     try {
         const {title, description, price, imageUrl} = req.body;
         const {success, error} = newCourseValidation.safeParse(req.body);
@@ -138,12 +142,39 @@ adminRouter.post("/course", authMiddleware, async (req, res) => {
 }) 
 
 adminRouter.put("/course", async (req, res) => {
-    
+    const {courseId, title, description, price, imageUrl} = req.body;
+    const {success, error} = updateCourseValidation.safeParse(req.body);
+
+    if(!success){
+        const errors = [];
+        error.issues.forEach(issue => errors.push(issue.message));
+        return res.json({
+            errors
+        })
+    }
+
+    // early return if the course doesn't exists with creatorId
+    const course = await Course.findOne({
+        _id: courseId,
+        creatorId: req.userId
+    })
+
+    if(!course){
+        return res.json({
+            msg: "You don't have enough rights to update this course"
+        })
+    }
+
+    const updatedCourse = await Course.findByIdAndUpdate(courseId, {
+        title, description, price, imageUrl
+    })
+
+    res.status(200).json({
+        msg: "Course details are updated"
+    })
 }) 
 
-adminRouter.get("/course/bulk", async (req, res) => {
-    
-}) 
+
 
 module.exports = {
     adminRouter

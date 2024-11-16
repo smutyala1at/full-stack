@@ -1,6 +1,6 @@
 const zod = require("zod");
 
-const newCourseValidation = zod.object({
+const courseValidation = zod.object({
     title: zod
             .string({required_error: "Title is required",})
             .min(10, {message: "Course title must be at least 10 characters long"})
@@ -15,8 +15,25 @@ const newCourseValidation = zod.object({
     imageUrl: zod
             .string()
             .url()
-}).strict({message: "Unknown parameters have been passed"})
+})
+
+const newCourseValidation = courseValidation.partial({
+    imageUrl: true
+}).strict({message: "Unknown parameters aren't allowed"})
+
+const updateCourseValidation = courseValidation.extend({
+    courseId: zod
+                .string({required_error: "course id is required"})
+}).partial({
+    title: true,
+    description: true,
+    price: true,
+    imageUrl: true
+}).strict({message: "Unknown parameters aren't allowed"})
+
+
 
 module.exports = {
-    newCourseValidation
+    newCourseValidation,
+    updateCourseValidation
 }
