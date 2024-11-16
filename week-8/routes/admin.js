@@ -92,7 +92,25 @@ adminRouter.post("/signin", async (req, res) => {
 }) 
 
 adminRouter.get("/course/bulk", async (req, res) => {
-    
+    try{
+        const courses = await Course.find()
+        const result = [];
+
+        courses.forEach(course => result.push({
+            title: course.title,
+            description: course.description,
+            price: course.price,
+            imageUrl: course.imageUrl || null
+        }))
+
+        return res.json({
+            courses: result
+        })
+    } catch(err){
+        res.json({
+            err
+        })
+    }
 }) 
 
 adminRouter.use(authMiddleware);
@@ -142,36 +160,42 @@ adminRouter.post("/course", async (req, res) => {
 }) 
 
 adminRouter.put("/course", async (req, res) => {
-    const {courseId, title, description, price, imageUrl} = req.body;
-    const {success, error} = updateCourseValidation.safeParse(req.body);
+    try{
+        const {courseId, title, description, price, imageUrl} = req.body;
+        const {success, error} = updateCourseValidation.safeParse(req.body);
 
-    if(!success){
-        const errors = [];
-        error.issues.forEach(issue => errors.push(issue.message));
-        return res.json({
-            errors
+        if(!success){
+            const errors = [];
+            error.issues.forEach(issue => errors.push(issue.message));
+            return res.json({
+                errors
+            })
+        }
+
+        // early return if the course doesn't exists with creatorId
+        const course = await Course.findOne({
+            _id: courseId,
+            creatorId: req.userId
+        })
+
+        if(!course){
+            return res.json({
+                msg: "You don't have enough rights to update this course"
+            })
+        }
+
+        const updatedCourse = await Course.findByIdAndUpdate(courseId, {
+            title, description, price, imageUrl
+        })
+
+        res.status(200).json({
+            msg: "Course details are updated"
+        })
+    } catch(err){
+        res.json({
+            err
         })
     }
-
-    // early return if the course doesn't exists with creatorId
-    const course = await Course.findOne({
-        _id: courseId,
-        creatorId: req.userId
-    })
-
-    if(!course){
-        return res.json({
-            msg: "You don't have enough rights to update this course"
-        })
-    }
-
-    const updatedCourse = await Course.findByIdAndUpdate(courseId, {
-        title, description, price, imageUrl
-    })
-
-    res.status(200).json({
-        msg: "Course details are updated"
-    })
 }) 
 
 
