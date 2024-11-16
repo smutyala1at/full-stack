@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 async function authMiddleware(req, res, next) {
     try{
         const token = req.headers.authorization;
-        
+        let decoded;
         if(req.baseUrl === "/user"){
-            const decoded = jwt.verify(token, process.env.USER_JWT_SECRET);
+            decoded = jwt.verify(token, process.env.USER_JWT_SECRET);
         } else {
-            const decoded = jwt.verify(token, process.env.ADMIN_JWT_SECRET);
+            decoded = jwt.verify(token, process.env.ADMIN_JWT_SECRET);
         }
 
         if(decoded.exp > Date.now()) {
