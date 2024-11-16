@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 require('dotenv').config();
 const {SignupSchemaValidation, SigninSchemaValidation} = require("../schemaValidation/userSchemaValidation");
 const { User, Course, Purchase } = require("../db/db");
+const { authMiddleware } = require("../middlewares/authMiddleware");
+const { purchaseSchemaValidation } = require("../schemaValidation/purchaseSchemaValidation");
 
 const userRouter = Router();
 
@@ -54,7 +56,6 @@ userRouter.post("/signin", async (req, res) => {
     if(!success){
         const errors = [];
         error.issues.forEach(issue => errors.push(issue.message));
-
         return res.json({
             msg: errors
         })
@@ -85,7 +86,7 @@ userRouter.post("/signin", async (req, res) => {
             exp: Date.now() + 3600 
         }
 
-        const token = jwt.sign(payload, process.env.JWT_SECRET);
+        const token = jwt.sign(payload, process.env.USER_JWT_SECRET);
 
         return res.json({
             token: token
@@ -114,15 +115,27 @@ userRouter.get("/course/bulk", async (req, res) => {
     }
 }) 
 
+userRouter.use(authMiddleware);
+
 userRouter.post("/course/purchase", async (req, res) => {
     try{
-        const {courseId} = req.body;
+        const {courseId, purchased} = req.body;
+        const {success, err} = purchaseSchemaValidation.safeParse(req.body);
 
+        if(!success){
+            const errors = [];
+            error.issues.forEach(issue => errors.push(issue.message));
+            return res.json({
+                msg: errors
+            })
+        }
+
+        // check if the course actually exists
         const isValid = await Course.findOne({
-            courseId: courseId
+            _id: courseId
         })
 
-        if(isValid){
+        if(isValid && purchased){
             const purchasedCourse = await Purchase.create({
                 userId: req.userId,
                 courseId: courseId
@@ -145,7 +158,7 @@ userRouter.post("/course/purchase", async (req, res) => {
 
 userRouter.get("/purchases", async (req, res) => {
     try{
-        const userCourses = await Purchase.findById(req.userId);
+        const userCourses = await Purchase.findOne({userId: req.userId});
         return res.json({
             userCourses
         })

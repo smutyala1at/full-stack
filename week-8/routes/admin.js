@@ -84,7 +84,7 @@ adminRouter.post("/signin", async (req, res) => {
         exp: Date.now() + 3600
     }
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET);
+    const token = jwt.sign(payload, process.env.ADMIN_JWT_SECRET);
 
     res.status(200).json({
         token: token
