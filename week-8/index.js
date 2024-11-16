@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 // create an instance of express http server
 const app = express();
 
@@ -19,3 +20,5 @@ async function main() {
         console.log("Server running on port 3000");
     })
 }
+
+main();
