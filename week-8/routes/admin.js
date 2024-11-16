@@ -1,5 +1,6 @@
 const {Router} = require("express");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const adminRouter = Router();
 const {Admin, Course} = require("../db/db")
 const {SignupSchemaValidation, SigninSchemaValidation} = require("../schemaValidation/userSchemaValidation");
@@ -30,11 +31,11 @@ adminRouter.post("/signup", async (req, res) => {
 
     // hash the password and store the user in the DB
     const hashedPassword = await bcrypt.hash(password, 5);
-    const user = await User.create({
-        firstName,
-        lastName,
-        email,
-        hashedPassword
+    const user = await Admin.create({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: hashedPassword
     })
 
     res.json({
@@ -44,8 +45,50 @@ adminRouter.post("/signup", async (req, res) => {
 
 }) 
 
-adminRouter.post("/login", async (req, res) => {
-    
+adminRouter.post("/signin", async (req, res) => {
+    const {email, password} = req.body;
+    const {success, error} = SigninSchemaValidation.safeParse(req.body);
+
+    // early return if the validation fails
+    if(!success){
+        const errors = [];
+        error.issues.forEach(issue => errors.push(issue.message));
+        return res.json({
+            errors
+        })
+    }
+
+    // early return if credentials are incorrect
+    const user = await Admin.findOne({
+        email: email
+    })
+
+    if(!user) {
+        return res.status(403).json({
+            msg: "user doesn't exists"
+        })
+    }
+
+    const istrueCredentials = await bcrypt.compare(password, user.password);
+
+    if(!istrueCredentials){
+        return res.status(403).json({
+            msg: "Incorrect credentials"
+        })
+    }
+
+    const payload = {
+        userId: user._id,
+        exp: Date.now() + 3600
+    }
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET);
+
+    res.status(200).json({
+        token: token
+    })
+
+
 }) 
 
 adminRouter.post("/course", async (req, res) => {
