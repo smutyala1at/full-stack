@@ -52,7 +52,8 @@ const adminSchema = new mongoose.Schema({
 const courseSchema = new mongoose.Schema({
     title: {
         type: String,
-        require: true
+        require: true,
+        unique: true
     },
 
     description: {

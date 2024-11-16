@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const adminRouter = Router();
 const {Admin, Course} = require("../db/db")
 const {SignupSchemaValidation, SigninSchemaValidation} = require("../schemaValidation/userSchemaValidation");
+const {authMiddleware} = require("../middlewares/authMiddleware");
+const { newCourseValidation } = require("../schemaValidation/coursesSchemaValidation");
 
 adminRouter.post("/signup", async (req, res) => {
     const {firstName, lastName, email, password} = req.body;
@@ -91,8 +93,48 @@ adminRouter.post("/signin", async (req, res) => {
 
 }) 
 
-adminRouter.post("/course", async (req, res) => {
+adminRouter.post("/course", authMiddleware, async (req, res) => {
+    try {
+        const {title, description, price, imageUrl} = req.body;
+        const {success, error} = newCourseValidation.safeParse(req.body);
+
+        if(!success){
+            const errors = [];
+            error.issues.forEach(issue => errors.push(issue.message));
+            return res.json({
+                errors
+            })
+        }
+        // early return if the course with same creatorId exists in DB
+        const existingCourse = await Course.findOne({
+            title: title,
+            creatorId: req.userId
+        })
+
+        if(existingCourse){
+            return res.json({
+                msg: "Course already exists in your courses"
+            })
+        }
+
+        const course = await Course.create({
+            title: title,
+            description: description,
+            price: price,
+            imageUrl: imageUrl,
+            creatorId: req.userId
+        })
+
+        res.status(200).json({
+            msg: "Course has been created"
+        })
+    } catch(err){
+        return res.json({
+            msg: err.message
+        })
+    }
     
+
 }) 
 
 adminRouter.put("/course", async (req, res) => {

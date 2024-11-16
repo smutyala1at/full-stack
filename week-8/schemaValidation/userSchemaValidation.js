@@ -2,10 +2,10 @@ const zod = require("zod");
 
 const SignupSchemaValidation = zod.object({
     firstName: zod
-                .string()
+                .string({required_error: "First name is required"})
                 .min(3, {message: "First name must contain at least 3 characters"}),
     lastName: zod
-                .string()
+                .string({required_error: "Last name is required"})
                 .min(3, {message: "Last name must contain at least 3 characters"}),
     email: zod
             .string()
@@ -25,12 +25,12 @@ const SignupSchemaValidation = zod.object({
 
 const SigninSchemaValidation = zod.object({
     email: zod
-            .string()
+            .string({required_error: "Email is required"})
             .email({ message: "Invalid email address" })
             .min(8, {message: "Email must be at least 8 characters long"})
             .max(100, {message: "Email length cannot exceed 100 characters"}),
     password: zod
-                .string()
+                .string({required_error: "Password is required"})
                 .min(8, {message: "Password must contain at least 8 characters"})
                 .max(50, {message: "Password length cannot exceed 50 characters"})
                 .refine(password => /[A-Z]/.test(password), {message: "Password must contain at least one uppercase letter"})
