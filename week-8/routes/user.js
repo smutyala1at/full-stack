@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
 const {SignupSchemaValidation, SigninSchemaValidation} = require("../schemaValidation/userSchemaValidation");
-const { User } = require("../db/db");
+const { User, Course, Purchase } = require("../db/db");
 
 const userRouter = Router();
 
@@ -92,8 +92,68 @@ userRouter.post("/signin", async (req, res) => {
         })
 }) 
 
-userRouter.get("/purchases", async (req, res) => {
+userRouter.get("/course/bulk", async (req, res) => {
+    try{
+        const courses = await Course.find()
+        const result = [];
 
+        courses.forEach(course => result.push({
+            title: course.title,
+            description: course.description,
+            price: course.price,
+            imageUrl: course.imageUrl || null
+        }))
+
+        return res.json({
+            courses: result
+        })
+    } catch(err){
+        res.json({
+            err
+        })
+    }
+}) 
+
+userRouter.post("/course/purchase", async (req, res) => {
+    try{
+        const {courseId} = req.body;
+
+        const isValid = await Course.findOne({
+            courseId: courseId
+        })
+
+        if(isValid){
+            const purchasedCourse = await Purchase.create({
+                userId: req.userId,
+                courseId: courseId
+            })
+
+            res.json({
+                msg: "Your purchase is successful"
+            })
+        } else{
+            return res.json({
+                msg: "Course is not available"
+            })
+        }
+    } catch(err){
+        return res.json({
+            msg: err.message
+        })
+    }
+})
+
+userRouter.get("/purchases", async (req, res) => {
+    try{
+        const userCourses = await Purchase.findById(req.userId);
+        return res.json({
+            userCourses
+        })
+    } catch(err){
+        return res.json({
+            msg: err.message
+        })
+    }
 })
 
 

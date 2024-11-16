@@ -5,10 +5,6 @@ courseRouter.get("/preview", async  (req, res) => {
 
 }) 
 
-courseRouter.post("/purchase", async (req, res) => {
-    
-}) 
-
 module.exports = {
     courseRouter
 }
