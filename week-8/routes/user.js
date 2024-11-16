@@ -1,5 +1,7 @@
 const {Router} = require("express");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require('dotenv').config();
 const {userSignupSchemaValidation, userSigninSchemaValidation} = require("../schemaValidation/userSchemaValidation");
 const { User } = require("../db/db");
 
@@ -45,8 +47,49 @@ userRouter.post("/signup", async (req, res) => {
 }) 
 
 userRouter.post("/signin", async (req, res) => {
-    
-    
+    const {email, password} = req.body;
+    const {success, error} = userSigninSchemaValidation.safeParse(req.body);
+
+    // early return if the validation fails
+    if(!success){
+        const errors = [];
+        error.issues.forEach(issue => errors.push(issue.message));
+
+        return res.json({
+            msg: errors
+        })
+    }
+
+    // early return if the user doesn't exists
+    const user = await User.findOne({
+        email: email,
+    })
+
+    if(!user){
+        return res.status(403).json({
+            msg: "user doesn't exists"
+        })
+    }
+
+    const istrueCredentials = await bcrypt.compare(password, user.password);
+
+        // return if the credentials are wrong
+        if(!istrueCredentials){
+            return res.status(403).json({
+                msg: "Incorrect credentials"
+            })
+        }
+
+        const payload = {
+            userId: user._id,
+            exp: Date.now() + 3600 
+        }
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET);
+
+        return res.json({
+            token: token
+        })
 }) 
 
 userRouter.get("/purchases", async (req, res) => {

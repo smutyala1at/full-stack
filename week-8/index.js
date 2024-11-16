@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+require('dotenv').config();
 // create an instance of express http server
 const app = express();
 
@@ -15,9 +16,9 @@ app.use("/admin", adminRouter);
 
 
 async function main() {
-    await mongoose.connect("mongodb+srv://admin:qpaly%40199@cluster0.6rzvv.mongodb.net/coursera");
-    app.listen(3000, () => {
-        console.log("Server running on port 3000");
+    await mongoose.connect(process.env.MONGODB_URL);
+    app.listen(process.env.PORT || 3000, () => {
+        console.log(`Server running on port ${process.env.port || 3000}`);
     })
 }
 
