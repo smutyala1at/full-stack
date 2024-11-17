@@ -20,8 +20,13 @@ async function authMiddleware(req, res, next) {
         next()
 
     } catch(err){
+        let errMessage = err.message;
+
+        if(err.name === "JsonWebTokenError"){
+            errMessage = "Invalid token"
+        }
         return res.json({
-            msg: err.message
+            msg: errMessage
         })
     }
 }
