@@ -71,18 +71,21 @@ const courseSchema = new mongoose.Schema({
     },
 
     creatorId: {
-        type: objectId
+        type: objectId,
+        ref: "Admin"
     }
 })
 
 const purchaseSchema = new mongoose.Schema({
     userId: {
         type: objectId,
+        ref: "User",
         required: true
     },
 
     courseId: {
         type: objectId,
+        ref: "Course",
         required: true
     }
 })

@@ -91,9 +91,12 @@ adminRouter.post("/signin", async (req, res) => {
     })
 }) 
 
+adminRouter.use(authMiddleware);
+
+// end point to get courses created by the creator/admin
 adminRouter.get("/course/bulk", async (req, res) => {
     try{
-        const courses = await Course.find()
+        const courses = await Course.find({creatorId: req.userId})
         const result = [];
 
         courses.forEach(course => result.push({
@@ -112,8 +115,6 @@ adminRouter.get("/course/bulk", async (req, res) => {
         })
     }
 }) 
-
-adminRouter.use(authMiddleware);
 
 adminRouter.post("/course", async (req, res) => {
     try {

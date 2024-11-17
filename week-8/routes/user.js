@@ -158,9 +158,34 @@ userRouter.post("/course/purchase", async (req, res) => {
 
 userRouter.get("/purchases", async (req, res) => {
     try{
-        const userCourses = await Purchase.findOne({userId: req.userId});
+        const purchases = await Purchase.find({userId: req.userId});
+
+        // return course title, description etc
+        const courses = await Course.find({
+            _id: purchases.map(course => course.courseId)
+        })
+
+        /* const userPurchases = await Purchase.aggregate([
+            {
+                "$match": {
+                    userId: req.userId
+                }
+            }, 
+            {
+                "$lookup": {
+                    from: "courses",
+                    localField: "courseId",
+                    foreignField: "_id",
+                    as: "courseDetails"
+                }
+            },
+            {
+                "$unwind": "$courseDetails"
+            }
+        ]) */
+    
         return res.json({
-            userCourses
+            courses
         })
     } catch(err){
         return res.json({
