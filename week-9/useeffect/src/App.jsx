@@ -9,7 +9,7 @@ function App() {
   }
 
   return (
-    <div>
+    <div>  
       <Counter count={count} />
       <button onClick={() => updateCount(setCount, 1)}>Increase Count</button>
       <button onClick={() => updateCount(setCount, -1)}>Decrease Count</button>
