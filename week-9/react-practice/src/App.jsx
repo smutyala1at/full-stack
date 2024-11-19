@@ -3,17 +3,15 @@ import { useState } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div>
-      <Counter count={count} setCount={setCount}/>
+      <Counter/>
     </div>
   )
 }
 
-function Counter(props){
-  const {count, setCount} = props;
+function Counter(){
+  const [count, setCount] = useState(0)
 
   let counter;
 
