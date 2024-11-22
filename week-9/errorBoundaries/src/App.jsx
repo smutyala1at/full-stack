@@ -14,7 +14,7 @@ function App() {
 
 function Card1() {
 
-  throw new Error('Error while rendering');
+  throw new Error('Error while rendering'); 
 
   return (
   <>

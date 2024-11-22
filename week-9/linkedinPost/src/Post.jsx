@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 function Post(props){
     return (
       // post container

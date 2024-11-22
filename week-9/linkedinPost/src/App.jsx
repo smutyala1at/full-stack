@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import  Post  from "./Post";
 import { useState } from "react";
 
