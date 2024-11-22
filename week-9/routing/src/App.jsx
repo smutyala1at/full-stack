@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useNavigate, redirect } from 'react-router-dom';
 
 
 function App() {
@@ -16,6 +16,7 @@ function App() {
           <Route path="/neet/online-coaching-class-11" element={<Class11Program />} />
           <Route path="/neet/online-coaching-class-12" element={<Class12Program />} />
           <Route path="/" element={<Landing />} />
+          <Route path="*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
     </>
@@ -33,7 +34,7 @@ function Class12Program(){
   useEffect(function(){
     setTimeout(function(){
       console.log("in setTimeout");
-      return navigate("/");
+      navigate("/");
     }, 2000);
 
     return function(){
@@ -46,6 +47,19 @@ function Class12Program(){
 
 function Landing(){
   return <h1>Allen Landing Page</h1>
+}
+
+function ErrorPage(){
+
+  const navigate = useNavigate(); // useNavigate is a hook, and can be only used in react functional components
+
+  function redirectToHome(){
+    return navigate("/");
+  }
+
+  return <button onClick={redirectToHome}>
+    Sorry page not found
+  </button>
 }
 
 export default App
