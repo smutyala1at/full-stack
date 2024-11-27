@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useFetch }from './FetchHook'
+import { useFetch }from './hooks/UseFetchHook'
+import { usePrev } from './hooks/UsePrevHook';
 
 // custom hook
 function useCounter(){
@@ -28,10 +29,11 @@ function Counter() {
 function FetchPost() {
   const [currentPost, setCurrentPost] = useState(1);
   const {post, loading} = useFetch('https://jsonplaceholder.typicode.com/todos/' + currentPost, 10);
-  
+  const prevPost = usePrev(post);
+
   if(loading){
     return <div>Loading....</div>
-  }
+  } 
 
   return (
     <div>
@@ -40,6 +42,9 @@ function FetchPost() {
       <button onClick={() => setCurrentPost(3)}>Post 3</button>
       <div>
         {JSON.stringify(post)}
+      </div>
+      <div>
+        Previous post: {JSON.stringify(prevPost)}
       </div>
     </div>
   )
