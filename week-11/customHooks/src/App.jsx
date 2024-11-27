@@ -27,7 +27,7 @@ function Counter() {
 
 function FetchPost() {
   const [currentPost, setCurrentPost] = useState(1);
-  const {post, loading} = useFetch('https://jsonplaceholder.typicode.com/todos/' + currentPost);
+  const {post, loading} = useFetch('https://jsonplaceholder.typicode.com/todos/' + currentPost, 10);
   
   if(loading){
     return <div>Loading....</div>
@@ -38,7 +38,9 @@ function FetchPost() {
       <button onClick={() => setCurrentPost(1)}>Post 1</button>
       <button onClick={() => setCurrentPost(2)}>Post 2</button>
       <button onClick={() => setCurrentPost(3)}>Post 3</button>
-      {JSON.stringify(post)}
+      <div>
+        {JSON.stringify(post)}
+      </div>
     </div>
   )
 }
