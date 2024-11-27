@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useFetch }from './FetchHook'
 
 // custom hook
 function useCounter(){
@@ -24,12 +25,15 @@ function Counter() {
   )
 }
 
+function FetchPost() {
+  const post = useFetch('https://jsonplaceholder.typicode.com/todos/1'); 
+  return (post && <div>{JSON.stringify(post)}</div>)
+}
+
 function App(){
   return <>
     <Counter />
-    <Counter />
-    <Counter />
-    <Counter />
+    <FetchPost />
   </>
 }
 
