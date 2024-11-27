@@ -2,18 +2,24 @@ import {useState, useEffect} from 'react';
 
 export function useFetch(url){
     const [post, setPost] = useState({});
+    const [loading, setLoading] = useState(true);
 
     async function getPosts(){
+        setLoading(true);
         const response = await fetch(url);
         const data = await response.json();
         setPost(data);
+        setLoading(false);
     }
 
     useEffect(() => {
         getPosts();
-    }, []); // empty dependency === execute on mount
+    }, [url]); // added dynamic url, so we should run useEffect whenever url changes
 
-    return post;
+    return {
+        post,
+        loading
+    };
 
     // custom hook should follow
     /* - should use react hook
