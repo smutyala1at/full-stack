@@ -3,23 +3,23 @@ import { createContext, useContext, useState } from 'react'
 const valueContext = createContext();
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div>
-      <valueContext.Provider value={{count, setCount}}>
         <Parent />
-      </valueContext.Provider>
     </div>
   )
 }
 
 function Parent(){
+  const [count, setCount] = useState(0)
+
   return (
     <div>
-      <Increase />
-      <Decrease />
-      <Value />
+      <valueContext.Provider value={{count, setCount}}>
+        <Increase />
+        <Decrease />
+        <Value />
+      </valueContext.Provider>
     </div>
   )
 }
