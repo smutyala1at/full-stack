@@ -1,4 +1,4 @@
-import {jobsAtom, messagingAtom, networkAtom, notificationAtom, totalNotificationCount} from "./store/atoms/linkedinAtoms"
+import {notificationsAtom, totalNotificationSelector} from "./store/atoms/linkedinAtoms"
 import {useRecoilValue, RecoilRoot} from "recoil"
 
 function App() {
@@ -7,24 +7,20 @@ function App() {
       <MainApp />
     </RecoilRoot>
   )
-
 }
 
 function MainApp(){
 
-  const networkNotificationCount = useRecoilValue(networkAtom);
-  const jobsAtomCount = useRecoilValue(jobsAtom);
-  const messagingAtomCount = useRecoilValue(messagingAtom);
-  const notificationsAtomCount = useRecoilValue(notificationAtom);
-  const totalCount = useRecoilValue(totalNotificationCount);
+  const notifications = useRecoilValue(notificationsAtom);
+  const totalCount = useRecoilValue(totalNotificationSelector)
 
   return (
     <div>
       <div><button>Home</button></div>
-      <div><button>My network ({networkNotificationCount >= 100 ? "99+" : networkNotificationCount})</button></div>
-      <div><button>Jobs ({jobsAtomCount})</button></div>
-      <div><button>Messaging ({messagingAtomCount})</button></div>
-      <div><button>Notifications ({notificationsAtomCount})</button></div>
+      <div><button>My network ({notifications.network >= 100 ? "99+" : notifications.network})</button></div>
+      <div><button>Jobs ({notifications.jobs})</button></div>
+      <div><button>Messaging ({notifications.messages})</button></div>
+      <div><button>Notifications ({notifications.notifications})</button></div>
       <div><button>Me ({totalCount})</button></div>
     </div>
   )
