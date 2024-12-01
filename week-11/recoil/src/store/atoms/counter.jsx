@@ -5,7 +5,7 @@ export const counterAtom = atom({
     default: 0
 })
 
-// why we need selectors? for derived values, subscribing to particular particular state given a big atom with many states
+// why we need selectors? for derived values, subscribing to particular state given a big atom with many states
 export const evenSelector = selector({
     key: "isEvenSelector",
     get: function({get}){ // no default value has it derived from an atom, that's why we use get property.

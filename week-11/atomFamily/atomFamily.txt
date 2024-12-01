@@ -1,0 +1,3 @@
+useState: Todos are stored locally in one place, but sharing them with other components requires prop drilling (passing data through multiple levels), which can get messy in larger apps. Changing one still refreshes the entire list.
+Single Atom: Todos are globally accessible, removing the need for prop drilling, but changing one still refreshes all components that use the list.
+atomFamily: Each todo has its own storage, so changing one only affects that specific todo, making it efficient and avoiding prop drilling entirely.
