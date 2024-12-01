@@ -1,9 +1,9 @@
 
 
-export function Input(){
+export function Input({type, placeholder, onClick}){
     return (
         <div>
-            <input className="w-96 px-3 py-3 border-2 border-slate-300 rounded-md" type="text" placeholder="email"/>
+            <input onClick={onClick} className="w-96 px-3 py-3 text-white bg-blue-500 rounded-md" type={type} placeholder={placeholder} />
         </div>
     )
 }

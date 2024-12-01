@@ -2,15 +2,17 @@ import { Button } from "./components/ButtonComponent"
 import { Input } from "./components/InputComponent"
 import { Heading } from "./components/HeadingComponent"
 import { Text } from "./components/TextComponent"
+import { OtpBox } from "./components/OtpComponent"
 
 function App(){
   return (
-    <div className="bg-black h-screen">
-      <Input />
+    <div className="bg-blue-700 h-screen">
+      <Input type="email" placeholder="username" />
       <Heading text="Webinar.gg"/>
       <Text text="Please sign up or sign in" />
       <Button text="Continue" variant="disabled" />
       <Button text="Continue" variant="enabled" />
+      <OtpBox />
     </div>
   )
 }
