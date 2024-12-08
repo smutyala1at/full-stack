@@ -9,7 +9,10 @@ export function OtpBox(){
         if(inputRef.current[idx + 1]) {
             inputRef.current[idx + 1].focus()
         }
-        else setSubmitEnable(true);
+        else {
+            setSubmitEnable(true);
+            inputRef.current[idx].blur();
+        }
     }
 
     function handleBackFocus(idx){
