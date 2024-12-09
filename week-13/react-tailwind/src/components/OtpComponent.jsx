@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Button } from "./ButtonComponent";
 
-export function OtpBox(){
+export function OtpBox(props){
     const inputRef = useRef([]);
     const [submitEnable, setSubmitEnable] = useState(false);
 
@@ -16,16 +16,19 @@ export function OtpBox(){
     }
 
     function handleBackFocus(idx){
-        if(idx === 0) return
-        if(inputRef.current[idx - 1]) {
-            inputRef.current[idx].value = ""
-            setTimeout(() => inputRef.current[idx - 1].focus(), 0);
-        }
+        if (inputRef.current[idx].value == "") {
+            if(idx === 0) return
+            if(inputRef.current[idx - 1]) {
+                inputRef.current[idx - 1].focus()
+            }
+        } else {
+            inputRef.current[idx] = ""
+        }  
     }
 
     return (
         <div>
-            {Array(6)
+            {Array(props.length)
                 .fill(null)
                 .map((_, idx) => {
                     return (
