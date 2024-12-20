@@ -8,8 +8,9 @@ const userSignupValidation = zod.object({
                 .string()
                 .nonempty({message: "Last name cannot be empty"}),
     email: zod
-            .string({required_error: "Email is required"})
+            .string()
             .email({message: "Invalid email address"}),
+            .nonempty({message: "Email cannot be empty"}),
     password: zod
                 .string()
                 .min(6, {message: "Password must be at least 6 characters"})
