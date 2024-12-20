@@ -85,3 +85,28 @@ todosRouter.put("/todos/:id", userAuthMiddleware, async (req, res) => {
         })
     }
 })
+
+// delete todo endpoint
+todosRouter.delete("/todos/:id", userAuthMiddleware, async (req,res) => {
+    try {
+        const todoId = req.params.id;
+
+        // find and delete todo
+        const deletedTodo = await Todos.findByIdAndDelete(todoId);
+
+        if(!deletedTodo) {
+            return res.status(404).json({
+                message: "Todo not found"
+            })
+        }
+
+        res.status(200).json({
+            message: "Todo deleted successfully"
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: "Something went wrong, please try again",
+            error: error.message
+        })
+    }
+})
