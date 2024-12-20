@@ -10,6 +10,12 @@ todosRouter.post("/todo", userAuthMiddleware, async (req, res) => {
         const { title, description } = req.body;
         const userId = req.userId;
 
+        if(!title || !description) {
+            return res.status(400).json({
+                message: "All fields are required"
+            })
+        }
+
         // create new todo
         await Todos.create({
             title: title,
@@ -35,11 +41,19 @@ todosRouter.get("/todos", userAuthMiddleware, async (req, res) => {
         const result = [];
 
         // find all todos for the user
-        const todos = await Todos.findById({
+        const todos = await Todos.find({
             userId: req.userId
         })
 
+        if(!todos.length) {
+            return res.status(200).json({
+                message: "No todos found",
+                todos: []
+            })
+        }
+
         todos.forEach(todo => result.push({
+            id: todo._id,
             title: todo.title,
             description: todo.description,
             completed: todo.completed

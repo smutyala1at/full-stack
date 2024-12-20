@@ -13,7 +13,7 @@ userRouter.post("/signup", async (req, res) => {
         const { firstName, lastName, email, password } = req.body;
 
         // find if user exists
-        const user = User.findOne({ email: email });
+        const user = await User.findOne({ email: email });
         if (user) {
             return res.status(400).json({
                 message: `user with email ${email} already exists`
@@ -41,7 +41,7 @@ userRouter.post("/signup", async (req, res) => {
 })
 
 // signin endpoint - authenticate user
-userRouter.post("signin", async (req, res) => {
+userRouter.post("/signin", async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -63,10 +63,10 @@ userRouter.post("signin", async (req, res) => {
 
         // generate token
         const payload = {
-            id: user._id,
+            userId: user._id,
             exp: Date.now() + 1000 * 3600
         }
-        const token = jwt.sign(payload, process.env.SECRET_KEY);
+        const token = jwt.sign(payload, process.env.JWT_SECRET);
 
         res.status(200).json({
             message: `Welcome back ${user.firstName}`,

@@ -14,14 +14,14 @@ function userAuthMiddleware(req, res, next) {
         }
 
         // verify token
-        decoded = jwt.verify(token, process.env.USER_JWT_SECRET);
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
         if(decoded.exp < Date.now()){
             res.status(401).json({
                 message: "Token expired, please sign in to receive new token"
             })
         }
 
-        req.userId = decoded.user_id;
+        req.userId = decoded.userId;
         next();
     } catch (error) {
         const errMessage = error.name === "JsonWebTokenError" ? "Unauthorized access - Invalid token" : error.message;
