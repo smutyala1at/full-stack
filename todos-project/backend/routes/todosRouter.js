@@ -8,14 +8,23 @@ const todosRouter = Router();
 todosRouter.post("/todo", userAuthMiddleware, async (req, res) => {
     try {
         const { title, description } = req.body;
+        const {success, error} = addTodoValidation.safeParse(req.body);
+
+        if(!success){
+            return res.status(400).json({
+                message: error.issues[0].message
+            })
+        }
+
         const userId = req.userId;
 
-        if(!title || !description) {
+        // not needed because of zod validation
+        /* if(!title || !description) {
             return res.status(400).json({
                 message: "All fields are required"
             })
         }
-
+ */
         // create new todo
         await Todos.create({
             title: title,
@@ -75,6 +84,14 @@ todosRouter.put("/todos/:id", userAuthMiddleware, async (req, res) => {
     try {
         const todoId = req.params.id;
         const updates = req.body;
+
+        const { success, error } = updateTodoValidation.safeParse(req.body);
+
+        if(!success){
+            return res.status(400).json({
+                message: error.issues[0].message
+            })
+        }
 
         // find and update todo
         const updatedTodo = await Todos.findByIdAndUpdate(

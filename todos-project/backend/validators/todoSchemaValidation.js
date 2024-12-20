@@ -5,5 +5,18 @@ const addTodoValidation = zod.object({
             .string()
             .nonempty({message: "Title cannot be empty"})
             .min(3, {message: "Title must be at least 3 characters"}),
-    
+    description: zod
+            .string()
+            .nonempty({message: "Descriptioncannot be empty"})
+            .min(3, {message: "Description must be at least 3 characters"})
+})
+
+
+const updateTodoValidation = addTodoValidation.extend({
+    completed: zod
+                .boolean()
+                .optional()
+}).partial({
+    title: true,
+    description: true
 })

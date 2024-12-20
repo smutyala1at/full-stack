@@ -2,6 +2,7 @@ require("dotenv").config();
 const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { userSignupValidation, userSigninValidation } = require("../validators/userSchemaValidation");
 const { User, Todos } = require("../db/db");
 
 // create new router instance
@@ -11,6 +12,13 @@ const userRouter = Router();
 userRouter.post("/signup", async (req, res) => {
     try {
         const { firstName, lastName, email, password } = req.body;
+        const { success, error } = userSignupValidation.safeParse(req.body);
+
+        if(!success){
+            return res.status(400).json({
+                message: error.issues[0].message
+            })
+        }
 
         // find if user exists
         const user = await User.findOne({ email: email });
@@ -44,6 +52,14 @@ userRouter.post("/signup", async (req, res) => {
 userRouter.post("/signin", async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        const { success, error } = userSigninValidation.safeParse(req.body);
+
+        if(!success){
+            return res.status(400).json({
+                message: error.issues[0].message
+            })
+        }
 
         // find user
         const user = await User.findOne({email: email});
