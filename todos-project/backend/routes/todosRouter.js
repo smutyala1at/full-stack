@@ -110,3 +110,8 @@ todosRouter.delete("/todos/:id", userAuthMiddleware, async (req,res) => {
         })
     }
 })
+
+
+module.exports = {
+    todosRouter
+}
