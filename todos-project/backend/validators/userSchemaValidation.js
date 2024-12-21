@@ -9,7 +9,7 @@ const userSignupValidation = zod.object({
                 .nonempty({message: "Last name cannot be empty"}),
     email: zod
             .string()
-            .email({message: "Invalid email address"}),
+            .email({message: "Invalid email address"})
             .nonempty({message: "Email cannot be empty"}),
     password: zod
                 .string()
@@ -21,7 +21,7 @@ const userSignupValidation = zod.object({
 }).strict({message: "Unknown parameters have been passed"})
 
 
-const userSigninValidation = zod.partial({
+const userSigninValidation = userSignupValidation.partial({
     firstName: true,
     lastName: true
 }).strict({message: "Unknown parameters have been passed"})
