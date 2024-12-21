@@ -16,7 +16,7 @@ userRouter.post("/signup", async (req, res) => {
 
         if(!success){
             return res.status(400).json({
-                message: error.issues[0].message
+                message: error.issues
             })
         }
 
@@ -57,7 +57,7 @@ userRouter.post("/signin", async (req, res) => {
 
         if(!success){
             return res.status(400).json({
-                message: error.issues[0].message
+                message: error.issues
             })
         }
 

@@ -9,10 +9,11 @@ const userSignupValidation = zod.object({
                 .nonempty({message: "Last name cannot be empty"}),
     email: zod
             .string()
-            .email({message: "Invalid email address"})
-            .nonempty({message: "Email cannot be empty"}),
+            .nonempty({message: "Email cannot be empty"})
+            .email({message: "Invalid email address"}),
     password: zod
                 .string()
+                .nonempty({message: "password cannot be empty"})
                 .min(6, {message: "Password must be at least 6 characters"})
                 .refine(password => /[A-Z]/.test(password), {message: "Password must have at least one uppercase letter"})
                 .refine(password => /[a-z]/.test(password), {message: "Password must have at least one lowercase letter"})

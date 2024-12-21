@@ -12,7 +12,7 @@ todosRouter.post("/todo", userAuthMiddleware, async (req, res) => {
 
         if(!success){
             return res.status(400).json({
-                message: error.issues[0].message
+                message: error.issues[0]
             })
         }
 
@@ -89,7 +89,7 @@ todosRouter.put("/todos/:id", userAuthMiddleware, async (req, res) => {
 
         if(!success){
             return res.status(400).json({
-                message: error.issues[0].message
+                message: error.issues[0]
             })
         }
 
