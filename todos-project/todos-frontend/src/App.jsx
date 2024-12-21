@@ -1,33 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react"
+import InputBox from "./components/InputBox"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: ""
+  })
+
+  // handleChange is a function that takes an attribute and returns a function that takes a new value to update the form data
+  const handleChange = (attribute) => (newVal) => {
+    // setFormData is a function that take a function that takes the previous state and returns the new state to setFormData function which updates the form data
+    setFormData((prev) => ({
+      ...prev,
+      [attribute]: newVal
+    }))
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="bg-zinc-900 w-full h-screen flex flex-col justify-center items-center">
+        <InputBox label="First Name" placeholder="first name" value={formData.firstName} onChange={handleChange("firstName")} error="oy! something went wrong" />
+        <InputBox label="Last Name" placeholder="last name" value={formData.lastName} onChange={handleChange("lastName")} error="" />
+        <InputBox label="Email" placeholder="email" value={formData.email} onChange={handleChange("email")} error="" />
+        <InputBox label="Password" type="password" placeholder="password" value={formData.password} onChange={handleChange("password")} error="" />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
