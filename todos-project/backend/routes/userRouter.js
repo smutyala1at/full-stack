@@ -24,7 +24,7 @@ userRouter.post("/signup", async (req, res) => {
         const user = await User.findOne({ email: email });
         if (user) {
             return res.status(400).json({
-                message: `user with email ${email} already exists`
+                message: `user with email already exists`
             })
         }
 
@@ -38,7 +38,7 @@ userRouter.post("/signup", async (req, res) => {
         })
 
         res.status(201).json({
-            messaage: `${firstName}, you're succesfully signed up`
+            message: `Sign up successful. Please login to continue`
         })
     } catch (error) {
         res.status(500).json({

@@ -1,9 +1,10 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import InputBox from "../components/InputBox"
 import Button from "../components/Button"
 import axios from "axios"
 import Heading from "../components/Heading"
+import SuccessSignup from "./SuccessSignup"
 
 export default function Signup() {
     const [formData, setFormData] = useState({
@@ -20,6 +21,8 @@ export default function Signup() {
         password: "",
         customError: ""
     })
+
+    const navigate = useNavigate();
     
     // handleChange is a function that takes an attribute and returns a function that takes a new value to update the form data
     const handleChange = (attribute) => (newVal) => {
@@ -30,13 +33,12 @@ export default function Signup() {
         }))
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault()
         try {
             const response = await axios.post("http://localhost:3000/user/signup", formData)
-            print(response.data)
-            if (response.data) {
-                // redirect to successful signup page with login link
-            }
+            // Navigate to the SuccessSignup page with the backend response
+            navigate("/success-signup", { state: { backendResponse: response.data.message } });
         } catch (error) {
             const formErrors = {}
             if(Array.isArray(error.response.data.message)) {
@@ -65,7 +67,7 @@ export default function Signup() {
                 {(errors.customError) &&
                     (<p className="text-sm text-red-500 mb-2">{errors.customError}</p>)
                 }
-                <Button label="Submit" onClick={handleSubmit} />
+                <Button type="submit" label="Submit" onClick={handleSubmit} />
                 <div className="flex flex-col items-center">
                     <p className="text-sm text-black mt-2">
                         Already have an account? 

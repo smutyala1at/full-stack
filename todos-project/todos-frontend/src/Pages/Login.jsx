@@ -5,7 +5,12 @@ import axios from 'axios';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-export default function Login() {
+export default function Login(
+    {
+        heading = true,
+        showSignupLink = true,
+        children
+    }) {
     const [formData, setFormData] = useState({
         email: "",
         password: ""
@@ -27,9 +32,7 @@ export default function Login() {
     const handleSubmit = async () => {
         try {
             const response = await axios.post("http://localhost:3000/user/signin", formData)
-            if (response.data) {
-                // redirect to todos page
-            }
+            localStorage.setItem("token", response.data.token)
         } catch (error) {
             if(Array.isArray(error.response.data.message)){
                 const formErrors = {}
@@ -48,19 +51,22 @@ export default function Login() {
     return (
         <div className="bg-zinc-900 w-full h-screen flex flex-col justify-center items-center">
             <div className="p-6 border rounded-lg shadow-lg bg-white">
-                <Heading title="Login" />
+                { heading && <Heading title="Login" subtitle="Welcome back!" />}
+                { children && <div className="mb-4">{children}</div> }
                 <InputBox type="text" label="Email" placeholder="Email" value={formData.email} onChange={handleChange("email")} error={errors.email} />
                 <InputBox type="password" label="Password" placeholder="Password" value={formData.password} onChange={handleChange("password")} error={errors.password} />
                 { errors.backendError && (
                     <p className="text-sm text-red-500 mb-2">{errors.backendError}</p>
                 )}
-                <Button label="Login" onClick={handleSubmit} />
-                <div className="flex flex-col items-center">
-                    <p className="text-sm text-black mt-2">
-                        Don't have an account?
-                        <Link to="/signup" className="text-sky-500 font-bold underline decoration-sky-500 px-1">Signup</Link>
-                    </p>
+                <Button type="submit" label="Login" onClick={handleSubmit} />
+                { showSignupLink && (
+                    <div className="flex flex-col items-center">
+                        <p className="text-sm text-black mt-2">
+                            Don't have an account?
+                            <Link to="/signup" className="text-sky-500 font-bold underline decoration-sky-500 px-1">Signup</Link>
+                        </p>
                 </div>
+                )}
             </div>
         </div>
     )
