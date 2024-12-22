@@ -4,7 +4,7 @@ export default function Button({
     onClick
 }){
     return (
-        <button className="bg-gray-500 text-white w-80 px-4 py-2 border rounded-lg mt-2 mb-1"
+        <button className="bg-zinc-900 text-white w-80 px-4 py-3 border rounded-lg mt-2 mb-2"
         onClick={onClick}>
             {label}
         </button>

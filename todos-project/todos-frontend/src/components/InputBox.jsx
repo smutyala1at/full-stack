@@ -10,7 +10,7 @@ export default function InputBox({
     return (
         <div className="mb-4">
             {label && (
-            <label className="block text-sm font-medium mb-1 text-white">
+            <label className="block text-sm font-medium mb-1 text-black">
                 {label}
             </label>
             )}
@@ -20,7 +20,7 @@ export default function InputBox({
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className={`w-80 border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-opacity-50
+            className={`w-80 border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-opacity-50
             ${error 
             ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
             : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
@@ -32,5 +32,5 @@ export default function InputBox({
             )}
             
         </div>
-        )
+    )
 }
