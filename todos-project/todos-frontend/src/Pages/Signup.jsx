@@ -4,7 +4,6 @@ import InputBox from "../components/InputBox"
 import Button from "../components/Button"
 import axios from "axios"
 import Heading from "../components/Heading"
-import SuccessSignup from "./SuccessSignup"
 
 export default function Signup() {
     const [formData, setFormData] = useState({
@@ -36,11 +35,12 @@ export default function Signup() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.post("http://localhost:3000/user/signup", formData)
+            const response = await axios.post("http://localhost:3000/user/signup", formData);
             // Navigate to the SuccessSignup page with the backend response
             navigate("/success-signup", { state: { backendResponse: response.data.message } });
         } catch (error) {
             const formErrors = {}
+            console.log(error)
             if(Array.isArray(error.response.data.message)) {
                 error.response.data.message.forEach((error) => {
                     if(!formErrors[error.path[0]]) formErrors[error.path[0]] = error.message
