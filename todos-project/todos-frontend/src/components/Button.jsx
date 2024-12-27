@@ -1,6 +1,5 @@
 
 export default function Button({
-    type,
     label,
     onClick
 }){

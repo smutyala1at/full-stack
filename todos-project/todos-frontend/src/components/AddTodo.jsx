@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
+import InputBox from './InputBox';
+import TodoButton from './TodoButton';
 
 export default function AddTodo() {
 
@@ -39,9 +41,10 @@ export default function AddTodo() {
     }
 
     return (
-        <div>
-            <InputBox type="text" label="Title" placeholder="Title" value={data.title} onChange={handleChange("title")} error={errors.title} />
-            <InputBox type="text" label="Description" placeholder="Description" value={data.description} onChange={handleChange("description")} error={errors.description} />
+        <div className="flex flex-col gap-4 m-4 md:gap-16 md:m-16 md:flex md:flex-row justify-center">
+            <InputBox type="text" placeholder="Title" value={data.title} onChange={handleChange("title")} error={errors.title} />
+            <InputBox type="text" placeholder="Description" value={data.description} onChange={handleChange("description")} error={errors.description} />
+            <TodoButton label="Add Todo" onClick={handleSubmit} />
         </div>
     )
 }
