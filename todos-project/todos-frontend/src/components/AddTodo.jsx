@@ -2,9 +2,11 @@ import { useState } from 'react';
 import axios from 'axios';
 import InputBox from './InputBox';
 import TodoButton from './TodoButton';
+import { useNavigate } from 'react-router-dom';
 
-export default function AddTodo() {
-
+export default function AddTodo({ onTodoAdded }) {
+    const navigate = useNavigate();
+    
     const [data, setData] = useState({
         title: "",
         description: ""
@@ -31,9 +33,14 @@ export default function AddTodo() {
                     "Authorization": `Bearer ${localStorage.getItem("token")}`
                 }
             });
+            onTodoAdded();
         } catch (error) {
             const errors = {};
-            console.log(error.response.data)
+            if (error.response?.status === 401) {
+                localStorage.removeItem("token");
+                navigate("/login");
+            }
+
             if(Array.isArray(error.response.data.message)) {
                 error.response.data.message.forEach((err) => {
                     if(!errors[err.path[0]]) errors[err.path[0]] = err.message;

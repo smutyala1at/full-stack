@@ -16,7 +16,7 @@ function userAuthMiddleware(req, res, next) {
         // verify token
         decoded = jwt.verify(token, process.env.JWT_SECRET);
         if(decoded.exp < Date.now()){
-            res.status(401).json({
+            return res.status(401).json({
                 message: "Token expired, please sign in to receive new token"
             })
         }
@@ -26,7 +26,7 @@ function userAuthMiddleware(req, res, next) {
     } catch (error) {
         const errMessage = error.name === "JsonWebTokenError" ? "Unauthorized access - Invalid token" : error.message;
 
-        res.status(401).json({
+        return res.status(401).json({
             message: errMessage
         });
     }

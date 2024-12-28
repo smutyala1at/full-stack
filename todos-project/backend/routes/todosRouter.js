@@ -8,7 +8,6 @@ const todosRouter = Router();
 todosRouter.post("/todo", userAuthMiddleware, async (req, res) => {
     try {
         const { title, description } = req.body;
-        console.log(req.body)
         const {success, error} = addTodoValidation.safeParse(req.body);
 
         if(!success){
@@ -132,11 +131,11 @@ todosRouter.delete("/todos/:id", userAuthMiddleware, async (req,res) => {
             })
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "Todo deleted successfully"
         })
     } catch (error) {
-        res.status(500).json({
+        return res.status(500).json({
             message: "Something went wrong, please try again",
             error: error.message
         })
