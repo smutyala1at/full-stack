@@ -1,6 +1,6 @@
 
 import AddTodo from '../components/AddTodo';
-import DisplayTodo from '../components/DisplayTodo';
+import DisplayTodos from '../components/DisplayTodos';
 import Header from '../components/Header';
 
 export default function HomePage() {
@@ -12,10 +12,10 @@ export default function HomePage() {
     }
 
     return (
-        <div className="bg-zinc-900 w-full h-screen">
+        <div className="bg-zinc-900 w-full min-h-screen">
             <Header />
             <AddTodo />
-            <DisplayTodo todo={todo} />
+            <DisplayTodos />
         </div>
     )
 }

@@ -23,21 +23,26 @@ export default function AddTodo() {
         }))
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            const response = await axios.post("http://localhost:3000/api/todo", data);
+            await axios.post("http://localhost:3000/api/todo", data, {
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            });
         } catch (error) {
             const errors = {};
+            console.log(error.response.data)
             if(Array.isArray(error.response.data.message)) {
                 error.response.data.message.forEach((err) => {
                     if(!errors[err.path[0]]) errors[err.path[0]] = err.message;
-                })
+                })   
                 setErrors(errors);
             } else {
                 setErrors({customError: error.response.data.message});
             }
         }
-
     }
 
     return (

@@ -1,18 +1,19 @@
 const { Todos } = require("../db/db");
 const { Router } = require("express");
 const { userAuthMiddleware } = require("../middlewares/userAuthMiddleware");
-
+const { addTodoValidation, updateTodoValidation } = require("../validators/todoSchemaValidation");
 const todosRouter = Router();
 
 // add todo endpoint
 todosRouter.post("/todo", userAuthMiddleware, async (req, res) => {
     try {
         const { title, description } = req.body;
+        console.log(req.body)
         const {success, error} = addTodoValidation.safeParse(req.body);
 
         if(!success){
             return res.status(400).json({
-                message: error.issues[0]
+                message: error.issues
             })
         }
 
@@ -67,7 +68,7 @@ todosRouter.get("/todos", userAuthMiddleware, async (req, res) => {
             description: todo.description,
             completed: todo.completed
         }));
-
+        
         res.status(200).json({
             todos: result
         })
@@ -89,7 +90,7 @@ todosRouter.put("/todos/:id", userAuthMiddleware, async (req, res) => {
 
         if(!success){
             return res.status(400).json({
-                message: error.issues[0]
+                message: error.issues
             })
         }
 

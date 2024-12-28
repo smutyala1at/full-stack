@@ -7,7 +7,7 @@ const addTodoValidation = zod.object({
             .min(3, {message: "Title must be at least 3 characters"}),
     description: zod
             .string()
-            .nonempty({message: "Descriptioncannot be empty"})
+            .nonempty({message: "Description cannot be empty"})
             .min(3, {message: "Description must be at least 3 characters"})
 })
 
@@ -20,3 +20,8 @@ const updateTodoValidation = addTodoValidation.extend({
     title: true,
     description: true
 })
+
+module.exports = {
+    addTodoValidation,
+    updateTodoValidation
+}

@@ -17,6 +17,7 @@ export default function InputBox({
 
             <input 
             type={type}
+            name={placeholder.toLowerCase()}
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}

@@ -3,6 +3,7 @@ const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { userSignupValidation, userSigninValidation } = require("../validators/userSchemaValidation");
+const { userAuthMiddleware } = require("../middlewares/userAuthMiddleware");
 const { User, Todos } = require("../db/db");
 
 // create new router instance
@@ -99,6 +100,13 @@ userRouter.post("/signin", async (req, res) => {
             error: error.message
         })
     }
+})
+
+
+userRouter.get("/validate", userAuthMiddleware, async (req, res) => {
+    res.status(200).json({
+        username: req.userId
+    })
 })
 
 

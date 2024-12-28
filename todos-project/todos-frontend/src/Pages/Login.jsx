@@ -2,7 +2,7 @@ import InputBox  from '../components/InputBox';
 import Heading  from '../components/Heading';
 import Button from '../components/Button';
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login(
@@ -30,9 +30,54 @@ export default function Login(
             }))
         }
 
+        useEffect(() => {
+            const emailInput = document.querySelector("input[type='email']");
+            const passwordInput = document.querySelector("input[type='password']");
+
+            const handleAutoFill = (e) => {
+                const { name, value } = e.target;
+
+                setFormData((prev) => ({
+                    ...prev,
+                    [name]: value
+                }))
+            }
+
+            emailInput?.addEventListener("input", handleAutoFill);
+            passwordInput?.addEventListener("input", handleAutoFill); 
+
+
+            return () => {
+                emailInput?.removeEventListener("input", handleAutoFill);
+                passwordInput?.removeEventListener("input", handleAutoFill);
+            }
+        })
+
+        useEffect(() => {
+            const token = localStorage.getItem("token");
+            if(token) {
+                const validateUser = async () => {
+                    try {
+                        const response = await axios.get("http://localhost:3000/user/validate", {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        })
+                        if(response.data.username || response.status === 200){
+                            navigate('/')
+                        }
+                    } catch (error) {
+                        localStorage.removeItem("token");
+                    }
+                }
+                validateUser();
+            }
+        }, [])
+
         const handleSubmit = async () => {
             try {
                 const response = await axios.post("http://localhost:3000/user/signin", formData)
+                console.log(response.data)
                 localStorage.setItem("token", response.data.token)
                 navigate('/')
             } catch (error) {
@@ -55,12 +100,12 @@ export default function Login(
                 <div className="p-6 border rounded-lg shadow-lg bg-white">
                     { heading && <Heading title="Login" subtitle="Welcome back!" />}
                     { children && <div className="mb-4">{children}</div> }
-                    <InputBox type="text" label="Email" placeholder="Email" value={formData.email} onChange={handleChange("email")} error={errors.email} />
+                    <InputBox type="email" label="Email" placeholder="Email" value={formData.email} onChange={handleChange("email")} error={errors.email} />
                     <InputBox type="password" label="Password" placeholder="Password" value={formData.password} onChange={handleChange("password")} error={errors.password} />
                     { errors.backendError && (
                         <p className="text-sm text-red-500 mb-2">{errors.backendError}</p>
                     )}
-                    <Button type="submit" label="Login" onClick={handleSubmit} />
+                    <Button label="Login" onClick={handleSubmit} />
                     { showSignupLink && (
                         <div className="flex flex-col items-center">
                             <p className="text-sm text-black mt-2">
