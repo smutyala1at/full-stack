@@ -6,11 +6,13 @@ import { useNavigate } from 'react-router-dom';
 
 export default function AddTodo({ onTodoAdded }) {
     const navigate = useNavigate();
-    
-    const [data, setData] = useState({
+
+    const INITIAL_FORM_STATE = {
         title: "",
         description: ""
-    })
+    }
+    
+    const [data, setData] = useState(INITIAL_FORM_STATE)
 
     const [errors, setErrors] = useState({
         title: "",
@@ -33,6 +35,7 @@ export default function AddTodo({ onTodoAdded }) {
                     "Authorization": `Bearer ${localStorage.getItem("token")}`
                 }
             });
+            setData(INITIAL_FORM_STATE);
             onTodoAdded();
         } catch (error) {
             const errors = {};

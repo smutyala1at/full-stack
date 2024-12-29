@@ -48,6 +48,22 @@ export default function DisplayTodos({ AddComponent=true, completed=false }) {
         }
     }
 
+    const updateTodo = (id) => async (todoData) => {
+        try {
+            await axios.put(`http://localhost:3000/api/todos/${id}`, todoData, {
+                headers: { 
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+            handleRefresh();
+        } catch (error) {
+            if (error.response?.status === 401) {
+                localStorage.removeItem("token");
+                navigate("/login");
+            }
+        }
+    }
+
     const handleCheck = (id) => async (e) => {
         const isChecked = e.target.checked;
         try {
@@ -82,6 +98,7 @@ export default function DisplayTodos({ AddComponent=true, completed=false }) {
                             todo={todo} 
                             onCheck={handleCheck(todo.id)} 
                             onDelete={deleteTodo(todo.id)} 
+                            onUpdate={updateTodo(todo.id)}
                         /> 
                     }
                     

@@ -1,7 +1,7 @@
 export default function Checkbox({label, isChecked, onChange}) {
     return (
         <div className="flex items-center">
-            <label className="">{label}</label>
+            <label className="text-lg font-bold italic">{label}</label>
             <input type="checkbox" 
             checked={isChecked} // expects boolean value
             onChange={onChange}
