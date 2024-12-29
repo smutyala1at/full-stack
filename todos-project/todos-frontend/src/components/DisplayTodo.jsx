@@ -1,23 +1,24 @@
+import Checkbox from "./Checkbox";
 import TodoButton from "./TodoButton";
-import axios from 'axios';
 
 export default function DisplayTodo({
     todo,
-    onClick
+    onDelete,
+    onCheck
 }) {
 
     return (
         <div className="flex justify-center">
-            <div className="bg-white w-[928px] rounded-lg m-8">
+            <div className="bg-white w-[928px] rounded-lg mb-8">
                 <div className="flex justify-between text-zinc-900 p-8">
                     <div className="flex flex-col gap-4">
                         <p>{todo.title}</p>
                         <p>{todo.description}</p>
-                        <p>Completed: {todo.completed.toString()}</p>
+                        <Checkbox label="Completed" onChange={onCheck} isChecked={todo.completed} />
                     </div>
                     <div className="flex flex-col gap-4">
                         <TodoButton label="Edit" onClick="" />
-                        <TodoButton label="Delete" onClick={onClick} />
+                        <TodoButton label="Delete" onClick={onDelete} />
                     </div>
                 </div>
             </div>

@@ -4,7 +4,7 @@ import axios from 'axios';
 import DisplayTodo from './DisplayTodo';
 import AddTodo from './AddTodo';
 
-export default function DisplayTodos() {
+export default function DisplayTodos({ AddComponent=true, completed=false }) {
     const [todos, setTodos] = useState([]);
     const [refresh, setRefresh] = useState(false);
     const navigate = useNavigate();
@@ -48,6 +48,23 @@ export default function DisplayTodos() {
         }
     }
 
+    const handleCheck = (id) => async (e) => {
+        const isChecked = e.target.checked;
+        try {
+            await axios.put(`http://localhost:3000/api/todos/${id}`, { completed: isChecked }, {
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            })
+            handleRefresh();
+        } catch (error) {
+            if (error.response?.status === 401) {
+                localStorage.removeItem("token");
+                navigate("/login");
+            }
+        }
+    }
+
     useEffect(() => {
         fetchTodos();
         return () => setTodos([]);
@@ -57,8 +74,19 @@ export default function DisplayTodos() {
 
     return (
         <div>
-            <AddTodo onTodoAdded={handleRefresh} />
-            { todos.map((todo) => <DisplayTodo key={todo.id} todo={todo} onClick={deleteTodo(todo.id)} />)}
+            { AddComponent && <AddTodo onTodoAdded={handleRefresh} /> }
+            { todos.map((todo) => { 
+                    if (todo.completed === completed) {
+                        return <DisplayTodo 
+                            key={todo.id} 
+                            todo={todo} 
+                            onCheck={handleCheck(todo.id)} 
+                            onDelete={deleteTodo(todo.id)} 
+                        /> 
+                    }
+                    
+                } 
+            )}
         </div>
     )
 }
