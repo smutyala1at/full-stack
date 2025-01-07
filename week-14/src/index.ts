@@ -1,30 +1,21 @@
+// interfaces vs types
+// create two types called User and Admin
+// create a function that either accepts a User or an Admin as an input, and returns a string saying "Welcome, [name]"
 
-
-function greetings(name: string) : void {
-    console.log(`Hello ${name}`);
+interface User {
+    name: string;
+    age: number;
 }
 
-greetings("santosh");
-
-
-function sum(a: number, b: number) : number {
-    return a + b;
+interface Admin {
+    name: string;
+    permissions: string;
 }
 
-const result: number = sum(10, 20);
-console.log(result);
+type UserOrAdmin = User | Admin;
 
-
-function isLegal(age: number) : boolean {
-    return age >= 18;
+function greet (user: UserOrAdmin) : string {
+    return `Welcome, ${user.name}`;
 }
 
-console.log(isLegal(20));
-
-function delayedCall(fn: () => void){
-    setTimeout(fn, 1000);
-}
-
-delayedCall(function(){
-    console.log("hello");
-})
+console.log(greet({name: "Santosh", age: 24}));

@@ -11,7 +11,8 @@ function App() {
     /* usually react doesn't go crazy although we are using setInterval here, because it is only triggered when we click on start button,
     when re-rendering, it can't invoke a function. But it does go crazy if we click on start button several times  */
 
-    /* use useRef WHEN YOU ARE MANAGING NOT UI ELEMENTS. HERE REFERENCE TO CLEARINTERVAL IS NOT BEING USED IN THE UI*/
+    /* use useRef WHEN YOU ARE MANAGING NOT UI ELEMENTS. HERE REF
+    ERENCE TO CLEARINTERVAL IS NOT BEING USED IN THE UI*/
 
     if(clockRef.current) return  /* return if the clock is already running, to prevent unnecessary clocks */
 
