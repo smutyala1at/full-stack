@@ -3,6 +3,7 @@
 interface User {
     id: number;
     name: string;
+    age: number;
     email: string;
     password: string;
 }
@@ -17,7 +18,7 @@ const displayUserProfile = (user: User) : UserProfile => {
 }
 
 // optional properties - like zod.partial()
-// Partial allows you to make all properties of a type optional.
+// Partial allows you to make properties of a type optional.
 type UpdateProps = Pick<User, "name" | "age" | "email">
 type UpdateUser = Partial<UpdateProps>;
 
@@ -42,3 +43,32 @@ const config: Readonly<Config> = {
 
 // config.apiKey = "1919191" 
 // error: Cannot assign to 'apiKey' because it is a read-only property.
+
+
+/* --------------------------------------------------------------------------------------- */
+
+// Record - let's you give cleaner types to objects
+// We can type object as follows
+
+interface Account {
+    id: string;
+    name: string
+}
+
+type Accounts = { [key: string]: Account };
+
+const accounts: Accounts = {
+    "abc123": {id: "1", name: "Santosh"},
+    "xyz123": {id: "2", name: "John"}
+}
+
+// or use Record
+
+type AccountsRecord = Record<string, Account>;
+
+const accountsRecord : AccountsRecord = {
+    "abc123": {id: "1", name: "Santosh"},
+    "xyz123": {id: "2", name: "John"}
+}
+
+console.log(accountsRecord.abc123)
