@@ -10,7 +10,7 @@ interface User {
 interface Admin {
     name: string;
     permissions: string;
-}
+} 
 
 type UserOrAdmin = User | Admin;
 
@@ -19,3 +19,29 @@ function greet (user: UserOrAdmin) : string {
 }
 
 console.log(greet({name: "Santosh", age: 24}));
+
+
+// arrays in typescript
+
+interface Address {
+    city: string;
+    pincode: number;
+    country: string;
+}
+interface Employee {
+    name: string;
+    age: number;
+    address: Address[];
+}
+
+let employee: Employee = {
+    name: "Santosh",
+    age: 24,
+    address: [{
+        city: "Berlin",
+        pincode: 12345,
+        country: "Germany"
+    }]
+}
+
+console.log(employee.address[0].city);
