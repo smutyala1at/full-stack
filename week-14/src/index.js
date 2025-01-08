@@ -15,3 +15,8 @@ var employee = {
         }]
 };
 console.log(employee.address[0].city);
+// takes users and return sum of their age
+function sumOfAges(user1, user2) {
+    return user1.age + user2.age;
+}
+console.log(sumOfAges({ name: "Santosh", age: 24 }, { name: "John", age: 25 }));
