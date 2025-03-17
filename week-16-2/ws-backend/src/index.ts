@@ -2,11 +2,6 @@ import { WebSocket, WebSocketServer } from "ws";
 
 const wss = new WebSocketServer({ port: 8080 });
 
-interface User {
-    socket: WebSocket;
-    room: string;
-}
-
 interface Message {
     type: "join" | "chat";
     payload: {
@@ -15,7 +10,11 @@ interface Message {
     }
 }
 
-let userConnections: User[] = [];
+// Map to store user connections with websockets as key and roomId as value
+const userConnections = new Map<WebSocket, string>();
+
+// Map to store room users with ID as key and Set of sockets as values
+const roomUsers = new Map<string, Set<WebSocket>>();
 
 wss.on("connection", (socket: WebSocket) => {
     socket.on("message", (message) => {
@@ -23,21 +22,46 @@ wss.on("connection", (socket: WebSocket) => {
 
         if(parsedMessage.type === "join") {
             console.log("user joined the room " + parsedMessage.payload.roomId )
-            userConnections.push({ socket: socket, room: parsedMessage.payload.roomId as string })
+            // add user to userConnections Map
+            const roomId = parsedMessage.payload.roomId as string;
+            userConnections.set(socket, roomId);
+
+            // add user to roomUsers map
+            if(!roomUsers.has(roomId)){
+                roomUsers.set(roomId, new Set());
+            }
+            roomUsers.get(roomId)?.add(socket);
         }
 
         if(parsedMessage.type === "chat") {
             const message = parsedMessage.payload.message;
 
             // get user details
-            const currentUser = userConnections.find((user) => user.socket === socket );
+            const roomId = userConnections.get(socket);
 
             // now send the message to all the users of currentUser's room
-            userConnections.forEach((con) => {
-                if(con.room === currentUser?.room) {
-                    con.socket.send(`New Message: ${message}`);
-                }
-            })
+            if(roomId) {
+                const users = roomUsers.get(roomId);
+                users?.forEach((userSocket) => {
+                    userSocket.send(`New message ${message}`);
+                })
+            }
+        }
+    })
+
+    socket.on("close", () => {
+        // Remove user from userConnections map
+        const roomId = userConnections.get(socket);
+        userConnections.delete(socket);
+
+        if(roomId) {
+            const users = roomUsers.get(roomId);
+            users?.delete(socket);
+
+            // if the room is empty, remove it from roomUsers map
+            if(users?.size === 0){
+                roomUsers.delete(roomId);
+            }
         }
     })
     
