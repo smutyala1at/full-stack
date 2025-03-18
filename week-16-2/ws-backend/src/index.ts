@@ -31,6 +31,14 @@ wss.on("connection", (socket: WebSocket) => {
                 roomUsers.set(roomId, new Set());
             }
             roomUsers.get(roomId)?.add(socket);
+
+            // send response to the user
+            socket.send(JSON.stringify({
+                type: "join",
+                payload: {
+                    status: "success"
+                }
+            }))
         }
 
         if(parsedMessage.type === "chat") {
@@ -43,7 +51,9 @@ wss.on("connection", (socket: WebSocket) => {
             if(roomId) {
                 const users = roomUsers.get(roomId);
                 users?.forEach((userSocket) => {
-                    userSocket.send(`New message ${message}`);
+                    userSocket.send(JSON.stringify({
+                        message: message
+                    }));
                 })
             }
         }
