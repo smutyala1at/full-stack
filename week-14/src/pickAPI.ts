@@ -29,7 +29,7 @@ const updateUserProfile = (user: UpdateUser): void => {
 
 
 // readonly properties 
-// when you have a configuration object that should not be altered after intialization, making it readonly ensuore its properties cannot be changed.
+// when you have a configuration object that should not be altered after intialization, making it readonly ensure its properties cannot be changed.
 
 interface Config {
     endpoint: string;
