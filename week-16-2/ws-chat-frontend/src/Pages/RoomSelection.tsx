@@ -1,23 +1,21 @@
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import { ChatIcon } from "../components/icons/ChatIcon"
 import { Button } from "../components/ui/Button"
 import { Input } from "../components/ui/Input"
 import { SubTitle } from "../components/ui/SubTitle"
 import { Title } from "../components/ui/Title"
 
-export const RoomSelection = ({ wsReference }: { wsReference: React.MutableRefObject<WebSocket | null> }) => {
-    const [roomDetails, setRoomDetails] = useState<boolean>(false);
-    const [roomCode, setRoomCode] = useState<string>(""); 
+export const RoomSelection = ({ wsReference, roomId="" }: { wsReference: React.MutableRefObject<WebSocket | null>, roomId?: string }) => {
     const inputRoomRef = useRef<HTMLInputElement>(null);
 
     const createNewRoom = () => {
-        const randomHash = Math.random().toString(36).substring(2, 8).toLocaleUpperCase();
-        setRoomDetails(true);
-        setRoomCode(randomHash);
+        wsReference.current?.send(JSON.stringify({
+            type: "create", 
+        }))
     }
 
     const copyToClipboard = () => {
-        navigator.clipboard.writeText(roomCode);
+        navigator.clipboard.writeText(roomId);
     }
 
     const handleJoinRoom = () => {
@@ -41,7 +39,7 @@ export const RoomSelection = ({ wsReference }: { wsReference: React.MutableRefOb
                     <ChatIcon />
                     <Title title="Real Time Chat" />
                 </div>
-                <SubTitle subtitle="temporary room that expires after both users exit"  />
+                <SubTitle subtitle="temporary room that expires after users exit"  />
             </div>
 
             <Button variant="primary" size="md" label="Create New Room" onClick={createNewRoom} />
@@ -53,7 +51,7 @@ export const RoomSelection = ({ wsReference }: { wsReference: React.MutableRefOb
                 <Button variant="primary" size="md" label="Join Room" onClick={handleJoinRoom} />
             </div>
 
-            { roomDetails && <Button variant="secondary" size="lg" label="Share this code with your friends" code={roomCode} onClick={copyToClipboard}  /> }
+            { roomId && <Button variant="secondary" size="lg" label="Share this code with your friends" code={roomId} onClick={copyToClipboard}  /> }
         </div>
     </div>
 }
