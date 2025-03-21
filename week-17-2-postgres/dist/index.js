@@ -16,12 +16,41 @@ const db_1 = require("./db/db");
 const express_1 = __importDefault(require("express"));
 db_1.client;
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
 // TODO: create routes to create, read, update and delete users and addresses
-app.get("/", (req, res) => {
-    res.status(200).json({
-        message: "app under progress"
-    });
-});
+app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { name, email, password, street, city, state, country, pincode } = req.body;
+        yield db_1.client.query("BEGIN"); // start transaction
+        // check if user already exists
+        const userExistsQuery = `SELECT * FROM users WHERE email = $1`;
+        const user = yield db_1.client.query(userExistsQuery, [email]);
+        console.log(user);
+        if (user.rows.length > 0) {
+            res.status(400).json({
+                message: "User already exists"
+            });
+            return;
+        }
+        // if user doesn't exists, insert user details into the database
+        const addUserQuery = `INSERT into users (name, email, password) VALUES ($1, $2, $3) RETURNING id`;
+        const response = yield db_1.client.query(addUserQuery, [name, email, password]);
+        const userId = response.rows[0].id;
+        const addAddressQuery = `INSERT into address (street, city, state, country, pincode, user_id) VALUES ($1, $2, $3, $4, $5, $6)`;
+        yield db_1.client.query(addAddressQuery, [street, city, state, country, pincode, userId]);
+        yield db_1.client.query("COMMIT"); // commit transaction
+        res.status(200).json({
+            message: "Signup successful"
+        });
+    }
+    catch (error) {
+        yield db_1.client.query("ROLLBACK");
+        console.log("Error occurred while signing up: ", error);
+        res.status(500).json({
+            message: "Error occurred while signing up"
+        });
+    }
+}));
 app.listen(3000, () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, db_1.createTables)();

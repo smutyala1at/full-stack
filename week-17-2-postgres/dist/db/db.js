@@ -47,6 +47,7 @@ const createTables = () => __awaiter(void 0, void 0, void 0, function* () {
         yield exports.client.query(`
             CREATE TABLE IF NOT EXISTS address(
                 id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL,
                 street VARCHAR(100) NOT NULL,
                 city VARCHAR(100) NOT NULL,
                 state VARCHAR(100) NOT NULL,
