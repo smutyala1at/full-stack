@@ -25,7 +25,6 @@ app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         // check if user already exists
         const userExistsQuery = `SELECT * FROM users WHERE email = $1`;
         const user = yield db_1.client.query(userExistsQuery, [email]);
-        console.log(user);
         if (user.rows.length > 0) {
             res.status(400).json({
                 message: "User already exists"
@@ -51,12 +50,46 @@ app.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
 }));
+app.get("/user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.query.id;
+        if (!id) {
+            res.status(400).json({
+                message: "User id is required"
+            });
+            return;
+        }
+        const getQuery = `
+            SELECT u.id, u.name, u.email, a.street, a.city, a.state, a.country, a.pincode
+            FROM users u
+            JOIN address a on u.id = a.user_id
+            WHERE u.id = $1
+        `;
+        const response = yield db_1.client.query(getQuery, [id]);
+        console.log(response);
+        if (response.rows.length === 0) {
+            res.status(404).json({
+                message: "User with this id does not exists"
+            });
+            return;
+        }
+        const userData = response.rows[0];
+        res.status(200).json({
+            data: userData
+        });
+    }
+    catch (error) {
+        res.status(500).json({
+            message: "Error occured while fetching user data"
+        });
+    }
+}));
 app.listen(3000, () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, db_1.createTables)();
         console.log("App is running on port 3000");
     }
     catch (error) {
-        console.log("Error occured while creating tables: ", error);
+        console.log("Failed to setup database: ", error);
     }
 }));

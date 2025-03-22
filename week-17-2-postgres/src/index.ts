@@ -44,11 +44,49 @@ app.post("/signup", async (req: Request, res: Response) => {
     }
 })
 
+app.get("/user", async (req: Request, res: Response) => {
+    try{
+        const id = req.query.id;
+        if(!id){
+            res.status(400).json({
+                message: "User id is required"
+            })
+            return;
+        }
+
+        const getQuery = `
+            SELECT u.id, u.name, u.email, a.street, a.city, a.state, a.country, a.pincode
+            FROM users u
+            JOIN address a on u.id = a.user_id
+            WHERE u.id = $1
+        `
+
+        const response = await client.query(getQuery, [id]);
+
+        if(response.rows.length === 0){
+            res.status(404).json({
+                message: "User with this id does not exists"
+            })
+            return;
+        }
+
+        const userData = response.rows[0];
+
+        res.status(200).json({
+            data: userData
+        })
+    } catch(error){
+        res.status(500).json({
+            message: "Error occured while fetching user data"
+        })
+    }
+});
+
 app.listen(3000, async () => {
     try{
         await createTables();
         console.log("App is running on port 3000");
     } catch(error){
-        console.log("Error occured while creating tables: ", error);
+        console.log("Failed to setup database: ", error);
     }
 });
