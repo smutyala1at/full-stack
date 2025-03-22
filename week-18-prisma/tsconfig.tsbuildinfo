@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/errors/custom.errors.ts","./src/middlewares/authMiddleware.ts","./src/routers/todos.router.ts","./src/routers/user.router.ts","./src/services/todos.services.ts","./src/services/user.services.ts","./src/types/types.ts","./src/validations/todos.validations.ts","./src/validations/user.validations.ts"],"version":"5.8.2"}
