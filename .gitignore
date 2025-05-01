@@ -13,3 +13,4 @@ week-8/.env
 week-8-oauth/node_modules/
 week-8-oauth/.env
 week-11/notifications-server/node_modules/
+node_modules
