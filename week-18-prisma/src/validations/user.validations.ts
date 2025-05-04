@@ -17,4 +17,4 @@ export const userLoginSchema = z.object({
     email: userSignupSchema.shape.email,
     password: z.string({required_error: "Password field is required"})
                 .nonempty({message: "Password field cannot be empty"})
-})
+}).strict({message: "Unknown parameter has been passed"})

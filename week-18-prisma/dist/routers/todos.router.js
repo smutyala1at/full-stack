@@ -14,7 +14,52 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.todosRouter = void 0;
 const express_1 = __importDefault(require("express"));
+const todos_services_1 = require("../services/todos.services");
+const custom_errors_1 = require("../errors/custom.errors");
 exports.todosRouter = (0, express_1.default)();
+exports.todosRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield (0, todos_services_1.addTodo)(Object.assign(Object.assign({}, req.body), { userId: req.userId }));
+        res.status(201).json({
+            message: "Todo created succesfully"
+        });
+        return;
+    }
+    catch (error) {
+        if (error instanceof custom_errors_1.ValidationError) {
+            res.status(422).json(error);
+            return;
+        }
+        if (error instanceof custom_errors_1.DatabaseError) {
+            res.status(500).json({
+                message: error.message
+            });
+            return;
+        }
+        res.status(500).json({
+            message: "Internal server error"
+        });
+        return;
+    }
+}));
 exports.todosRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("userid: ", req.userId);
+    try {
+        const todos = yield (0, todos_services_1.getTodos)(req.userId);
+        res.status(200).json({
+            todos
+        });
+        return;
+    }
+    catch (error) {
+        if (error instanceof custom_errors_1.DatabaseError) {
+            res.status(500).json({
+                message: error.message
+            });
+            return;
+        }
+        res.status(500).json({
+            message: "Internal server error"
+        });
+        return;
+    }
 }));
