@@ -5,4 +5,5 @@ const rootRouter = Router();
 
 rootRouter.use("/user", userRouter);
 
+
 export { rootRouter };
