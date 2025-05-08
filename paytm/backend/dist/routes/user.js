@@ -13,26 +13,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRouter = void 0;
-const express_1 = __importDefault(require("express"));
+const express_1 = require("express");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const db_1 = require("../db/db");
 const authValidation_1 = require("../validations/authValidation");
-const userRouter = (0, express_1.default)();
+const utils_1 = require("../utils/utils");
+const userRouter = (0, express_1.Router)();
 exports.userRouter = userRouter;
 userRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const input = req.body;
         const { success, error } = authValidation_1.signupValidation.safeParse(input);
         if (!success) {
-            res.status(400).json({
-                message: error
+            return res.status(400).json({
+                errors: (0, utils_1.formatErrors)(error)
             });
         }
         const { firstName, lastName, email, password } = input;
         const user = yield db_1.User.findOne({ email });
         if (user) {
-            res.status(400).json({
-                message: "User aleady exists with this email"
+            return res.status(409).json({
+                errors: "User aleady exists with this email"
             });
         }
         const hashedPassword = yield bcrypt_1.default.hash(password, 5);
@@ -42,13 +44,50 @@ userRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
             email,
             password: hashedPassword
         });
-        res.status(201).json({
+        return res.status(201).json({
             userId: newUser._id,
             message: "User signup successfull"
         });
     }
     catch (err) {
+        return res.status(500).json({
+            message: "Error while creating a user"
+        });
     }
 }));
 userRouter.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const input = req.body;
+        const { success, error } = authValidation_1.signinValidation.safeParse(input);
+        if (!success) {
+            return res.status(400).json({
+                errors: (0, utils_1.formatErrors)(error)
+            });
+        }
+        const { email, password } = input;
+        const user = yield db_1.User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found this email"
+            });
+        }
+        const isPasswordValid = yield bcrypt_1.default.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                message: "Invalid password"
+            });
+        }
+        const payload = {
+            userId: user._id
+        };
+        const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+        return res.status(200).json({
+            token
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
 }));

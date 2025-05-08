@@ -1,18 +1,20 @@
-import Router, { Request, Response } from "express";
+import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { User } from "../db/db";
-import { signupValidation } from "../validations/authValidation";
+import { signinValidation, signupValidation } from "../validations/authValidation";
+import { formatErrors } from "../utils/utils";
 
 const userRouter = Router();
 
-userRouter.post("/signup", async (req: Request, res: Response) => {
+userRouter.post("/signup", async (req: Request, res: Response): Promise<any> => {
     try {
         const input = req.body;
         const { success, error } = signupValidation.safeParse(input);
 
         if(!success){
-            res.status(400).json({
-                message: error
+            return res.status(400).json({
+                errors: formatErrors(error)
             })
         }
 
@@ -20,8 +22,8 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
         const user = await User.findOne({ email });
 
         if(user) {
-            res.status(400).json({
-                message: "User aleady exists with this email"
+            return res.status(409).json({
+                errors: "User aleady exists with this email"
             })
         }
 
@@ -34,20 +36,68 @@ userRouter.post("/signup", async (req: Request, res: Response) => {
             password: hashedPassword
         });
 
-        res.status(201).json({
+        return res.status(201).json({
             userId: newUser._id,
             message: "User signup successfull"
-        })
+        });
 
     } catch (err) {
-        res.status(500).json({
+        return res.status(500).json({
             message: "Error while creating a user"
+        });
+    }
+})
+
+userRouter.post("/signin", async (req: Request, res: Response): Promise<any> => {
+    try{
+        const input = req.body;
+        const { success, error } = signinValidation.safeParse(input);
+
+        if(!success) {
+            return res.status(400).json({
+                errors: formatErrors(error)
+            })
+        }
+
+        const { email, password } = input;
+
+        const user = await User.findOne({ email });
+        if(!user) {
+            return res.status(404).json({
+                message: "User not found this email"
+            })
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if(!isPasswordValid) {
+            return res.status(401).json({
+                message: "Invalid password"
+            })
+        }
+
+        const payload = {
+            userId: user._id
+        }
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: "1h"})
+
+        return res.status(200).json({
+            token
+        })
+    } catch (err) {
+        return res.status(500).json({
+            message: "Internal server error"
         })
     }
 })
 
-userRouter.post("/signin", async (req: Request, res: Response) => {
+userRouter.put("/", async (req: Request, res: Response): Promise<any> => {
+    try {
+        const input = req.body;
+        const userId = req.userId;
 
+        
+    }
 })
 
 export { userRouter };
