@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { User } from "../db/db";
+import { Account, User } from "../db/db";
 import { signinValidation, signupValidation } from "../validations/authValidation";
 import { formatErrors } from "../utils/utils";
 import { updateUserValidation } from "../validations/userValidation";
@@ -37,6 +37,12 @@ userRouter.post("/signup", async (req: Request, res: Response): Promise<any> => 
             email,
             password: hashedPassword
         });
+
+        // Assign random balance to the user so that we don't have to integrate with the banks
+        await Account.create({
+            userId: newUser._id,
+            balance: Math.floor(Math.random() * 10000) + 1
+        })
 
         return res.status(201).json({
             userId: newUser._id,

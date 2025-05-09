@@ -46,6 +46,11 @@ userRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
             email,
             password: hashedPassword
         });
+        // Assign random balance to the user so that we don't have to integrate with the banks
+        yield db_1.Account.create({
+            userId: newUser._id,
+            balance: Math.floor(Math.random() * 10000) + 1
+        });
         return res.status(201).json({
             userId: newUser._id,
             message: "User signup successfull"
