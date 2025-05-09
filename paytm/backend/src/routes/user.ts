@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import { User } from "../db/db";
 import { signinValidation, signupValidation } from "../validations/authValidation";
 import { formatErrors } from "../utils/utils";
+import { updateUserValidation } from "../validations/userValidation";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 const userRouter = Router();
 
@@ -91,12 +93,56 @@ userRouter.post("/signin", async (req: Request, res: Response): Promise<any> => 
     }
 })
 
-userRouter.put("/", async (req: Request, res: Response): Promise<any> => {
+userRouter.put("/", authMiddleware, async (req: Request, res: Response): Promise<any> => {
     try {
         const input = req.body;
-        const userId = req.userId;
+        const { success, error } = updateUserValidation.safeParse(input);
 
-        
+        if(!success) {
+            return res.status(400).json({
+                errors: formatErrors(error)
+            });
+        }
+
+        const userId = req.userId;
+        await User.findByIdAndUpdate(
+            userId,
+            input
+        )
+
+        return res.status(200).json({
+            message: "User updated successfully"
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+})
+
+
+userRouter.get("/bulk", async (req: Request, res: Response): Promise<any> => {
+    try {
+        const filter = (req.query.filter as string)?.trim();
+
+        const users = await User.find({
+            "$or": [
+                { firstName: { $regex: filter, $options: "i" } },
+                { lastName: { $regex: filter, $options: "i" } },
+            ]
+        });
+
+        return res.status(200).json({
+            users: users.map(({_id, firstName, lastName}) => ({
+                _id, 
+                firstName, 
+                lastName
+            }))
+        });
+    } catch (err) {
+        return res.status(500).json({
+            message: "Internal server error"
+        });
     }
 })
 

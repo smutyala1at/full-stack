@@ -6,29 +6,27 @@ interface Decode {
     userId: mongoose.Types.ObjectId;
 }
 
-interface AuthenticatedRequest extends Request {
-    userId?: mongoose.Types.ObjectId;
-}
-
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
     const authHeader = req.headers.authorization;
 
     if(!authHeader || !authHeader.startsWith("Bearer")) {
-        return res.status(401).json({
+        res.status(401).json({
             message: "No Authorization header"
         });
+        return;
     }
 
     const token = authHeader.split(" ")[1];
 
     try {
-        const decoded: string | jwt.JwtPayload = jwt.verify(token, process.env.JWT_SECRET as string);
-        (req as AuthenticatedRequest).userId = (decoded as Decode).userId;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+        req.userId = (decoded as Decode).userId;
         next();
     } catch(err) {
-        return res.status(401).json({
+        res.status(401).json({
             message: "Invalid token"
         })
+        return;
     }
 }
 

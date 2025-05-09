@@ -1,5 +1,7 @@
 import { signupValidation } from "./authValidation"
 
-const updateUserValidation = signupValidation.partial()
+const updateUserValidation = signupValidation.omit({
+    email: true,
+}).partial()
 
 export { updateUserValidation };

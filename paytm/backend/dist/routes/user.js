@@ -19,6 +19,8 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const db_1 = require("../db/db");
 const authValidation_1 = require("../validations/authValidation");
 const utils_1 = require("../utils/utils");
+const userValidation_1 = require("../validations/userValidation");
+const authMiddleware_1 = require("../middleware/authMiddleware");
 const userRouter = (0, express_1.Router)();
 exports.userRouter = userRouter;
 userRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -83,6 +85,51 @@ userRouter.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, funct
         const token = jsonwebtoken_1.default.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
         return res.status(200).json({
             token
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}));
+userRouter.put("/", authMiddleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const input = req.body;
+        const { success, error } = userValidation_1.updateUserValidation.safeParse(input);
+        if (!success) {
+            return res.status(400).json({
+                errors: (0, utils_1.formatErrors)(error)
+            });
+        }
+        const userId = req.userId;
+        yield db_1.User.findByIdAndUpdate(userId, input);
+        return res.status(200).json({
+            message: "User updated successfully"
+        });
+    }
+    catch (err) {
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}));
+userRouter.get("/bulk", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const filter = (_a = req.query.filter) === null || _a === void 0 ? void 0 : _a.trim();
+        const users = yield db_1.User.find({
+            "$or": [
+                { firstName: { $regex: filter, $options: "i" } },
+                { lastName: { $regex: filter, $options: "i" } },
+            ]
+        });
+        return res.status(200).json({
+            users: users.map(({ _id, firstName, lastName }) => ({
+                _id,
+                firstName,
+                lastName
+            }))
         });
     }
     catch (err) {
