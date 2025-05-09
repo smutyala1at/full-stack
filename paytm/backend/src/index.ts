@@ -12,6 +12,7 @@ app.use(express.json());
 
 // import main router
 app.use("/api/v1", rootRouter);
+app.use("/api/v1/account", rootRouter)
 
 app.listen(process.env.PORT, async () => {
     console.log("Server is running on port", process.env.PORT);

@@ -23,6 +23,7 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 // import main router
 app.use("/api/v1", routes_1.rootRouter);
+app.use("/api/v1/account", routes_1.rootRouter);
 app.listen(process.env.PORT, () => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Server is running on port", process.env.PORT);
     yield (0, db_1.connectDB)();
